@@ -1,3 +1,17 @@
-/.agents
-/.aider-desk
-/skills-lock.json
+# Local environments and caches
+backend/.venv/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+
+# Frontend dependencies and build artifacts
+frontend/node_modules/
+frontend/dist/
+
+# Vercel local link metadata
+.vercel/
+
+# Local agent metadata
+.agents/
+.aider-desk/
+skills-lock.json

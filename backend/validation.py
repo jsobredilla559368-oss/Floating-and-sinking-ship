@@ -14,24 +14,44 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from backend.constants import (
-    DEFAULT_DT_S,
-    DRAG_COEFF_DEFAULT,
-    DRAG_COEFF_SMALL_TEST,
-    FLUID_PRESETS,
-    GRAVITY_PRESETS,
-    tank_depth_m,
-)
-from backend.physics import (
-    ShipParams,
-    SimState,
-    analytical_heave_period_s,
-    classify_status,
-    equilibrium_draft_m,
-    max_displacement_kg,
-    rk4_step,
-    total_mass_kg,
-)
+try:
+    from backend.constants import (
+        DEFAULT_DT_S,
+        DRAG_COEFF_DEFAULT,
+        DRAG_COEFF_SMALL_TEST,
+        FLUID_PRESETS,
+        GRAVITY_PRESETS,
+        tank_depth_m,
+    )
+    from backend.physics import (
+        ShipParams,
+        SimState,
+        analytical_heave_period_s,
+        classify_status,
+        equilibrium_draft_m,
+        max_displacement_kg,
+        rk4_step,
+        total_mass_kg,
+    )
+except ImportError:
+    from constants import (
+        DEFAULT_DT_S,
+        DRAG_COEFF_DEFAULT,
+        DRAG_COEFF_SMALL_TEST,
+        FLUID_PRESETS,
+        GRAVITY_PRESETS,
+        tank_depth_m,
+    )
+    from physics import (
+        ShipParams,
+        SimState,
+        analytical_heave_period_s,
+        classify_status,
+        equilibrium_draft_m,
+        max_displacement_kg,
+        rk4_step,
+        total_mass_kg,
+    )
 
 
 def measure_heave_period_s(

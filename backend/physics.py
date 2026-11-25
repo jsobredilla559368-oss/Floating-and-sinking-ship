@@ -21,16 +21,28 @@ from dataclasses import asdict, dataclass
 import math
 from typing import Any, Mapping, Optional
 
-from backend.constants import (
-    ASSUMED_DEFAULTS,
-    DEFAULT_DT_S,
-    DRAG_COEFF_DEFAULT,
-    FLUID_PRESETS,
-    GRAVITY_PRESETS,
-    PARAM_BOUNDS,
-    VALID_MODES,
-    tank_depth_m,
-)
+try:
+    from backend.constants import (
+        ASSUMED_DEFAULTS,
+        DEFAULT_DT_S,
+        DRAG_COEFF_DEFAULT,
+        FLUID_PRESETS,
+        GRAVITY_PRESETS,
+        PARAM_BOUNDS,
+        VALID_MODES,
+        tank_depth_m,
+    )
+except ImportError:
+    from constants import (
+        ASSUMED_DEFAULTS,
+        DEFAULT_DT_S,
+        DRAG_COEFF_DEFAULT,
+        FLUID_PRESETS,
+        GRAVITY_PRESETS,
+        PARAM_BOUNDS,
+        VALID_MODES,
+        tank_depth_m,
+    )
 
 
 @dataclass(frozen=True)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import os
 from pathlib import Path
 from typing import Any
 
@@ -11,18 +12,33 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend import ENGINE_NAME, ENGINE_VERSION
-from backend.constants import DEFAULT_DT_S, get_constants_payload, tank_depth_m
-from backend.physics import (
-    SimState,
-    classify_status,
-    compute_summary_metrics,
-    equilibrium_draft_m,
-    params_from_dict,
-    simulate_trajectory,
-    validate_params_dict,
-)
-from backend.validation import run_self_tests
+try:
+    from backend import ENGINE_NAME, ENGINE_VERSION
+    from backend.constants import DEFAULT_DT_S, get_constants_payload, tank_depth_m
+    from backend.physics import (
+        SimState,
+        classify_status,
+        compute_summary_metrics,
+        equilibrium_draft_m,
+        params_from_dict,
+        simulate_trajectory,
+        validate_params_dict,
+    )
+    from backend.validation import run_self_tests
+except ImportError:
+    ENGINE_NAME = "cargo-draft-lab-python"
+    ENGINE_VERSION = "1.0.0"
+    from constants import DEFAULT_DT_S, get_constants_payload, tank_depth_m
+    from physics import (
+        SimState,
+        classify_status,
+        compute_summary_metrics,
+        equilibrium_draft_m,
+        params_from_dict,
+        simulate_trajectory,
+        validate_params_dict,
+    )
+    from validation import run_self_tests
 
 app = FastAPI(
     title="Cargo Draft Lab Physics API",
@@ -273,9 +289,9 @@ def get_self_test() -> dict[str, Any]:
     return run_self_tests()
 
 
-# Optional static mount for built frontend bundle (only if frontend/dist exists).
+# Optional static mount for local standalone serving (skipped on Vercel CDN).
 FRONTEND_DIST_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-if FRONTEND_DIST_DIR.is_dir():
+if not os.environ.get("VERCEL") and FRONTEND_DIST_DIR.is_dir():
     app.mount(
         "/",
         StaticFiles(directory=str(FRONTEND_DIST_DIR), html=True),
