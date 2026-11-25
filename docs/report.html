@@ -1,0 +1,2557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cargo Draft Lab: Technical Physics Specification and Verification Report</title>
+  <style>
+    :root {
+      --ink: #14202B;
+      --muted: #4A5C6D;
+      --navy: #1F364D;
+      --teal: #0A6C86;
+      --teal-dark: #38B2CE;
+      --teal-soft: #EBF5F8;
+      --crimson: #B83227;
+      --crimson-dark: #F06458;
+      --crimson-soft: #FCEFEE;
+      --surface: #F3F5F7;
+      --panel: #FFFFFF;
+      --border: #D0D9E2;
+      --dark-panel: #16222E;
+      --dark-surface: #0F1720;
+      --pass-bg: #E7F5EE;
+      --pass-ink: #145A38;
+      --font-display: "Archivo", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 16mm 14mm 17mm 14mm;
+    }
+
+    @page :first {
+      margin-top: 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #E8EEF3;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 9.4pt;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .document-shell {
+      max-width: 210mm;
+      margin: 0 auto;
+      background: var(--panel);
+      padding: 12mm 14mm;
+    }
+
+    @media print {
+      html, body {
+        background: var(--panel);
+      }
+      .document-shell {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    /* Header / Masthead */
+    header.doc-header {
+      border-top: 4px solid var(--navy);
+      border-bottom: 1.5px solid var(--border);
+      padding: 12pt 0 11pt 0;
+      margin-bottom: 14pt;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .masthead-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12pt;
+      margin-bottom: 8pt;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 9pt;
+    }
+
+    .brand-lockup svg {
+      flex-shrink: 0;
+    }
+
+    .doc-kicker {
+      font-family: var(--font-mono);
+      font-size: 7.5pt;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0 0 2pt 0;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 19pt;
+      line-height: 1.15;
+      color: var(--navy);
+      margin: 0;
+      letter-spacing: -0.015em;
+    }
+
+    .doc-subtitle {
+      font-size: 9.8pt;
+      color: var(--muted);
+      margin: 4pt 0 0 0;
+    }
+
+    .status-stamp {
+      border: 1.25px solid var(--teal);
+      background: var(--teal-soft);
+      color: var(--navy);
+      padding: 5pt 8pt;
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 7.5pt;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
+    .status-stamp strong {
+      display: block;
+      color: var(--teal);
+      font-size: 8.2pt;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6pt;
+      margin-top: 10pt;
+      padding-top: 8pt;
+      border-top: 1px solid var(--border);
+    }
+
+    .meta-cell {
+      font-size: 7.8pt;
+    }
+
+    .meta-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 6.8pt;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-value {
+      font-weight: 600;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Headings */
+    h2 {
+      font-family: var(--font-display);
+      font-size: 12.2pt;
+      color: var(--navy);
+      margin: 16pt 0 7pt 0;
+      padding-bottom: 3.5pt;
+      border-bottom: 1.5px solid var(--navy);
+      break-after: avoid;
+      page-break-after: avoid;
+      display: flex;
+      align-items: baseline;
+      gap: 6pt;
+    }
+
+    h2 .sec-num {
+      font-family: var(--font-mono);
+      font-size: 9.5pt;
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    h3 {
+      font-family: var(--font-display);
+      font-size: 10pt;
+      color: var(--teal);
+      margin: 11pt 0 4.5pt 0;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 6.5pt 0;
+    }
+
+    ul, ol {
+      margin: 0 0 7pt 0;
+      padding-left: 16pt;
+    }
+
+    li {
+      margin-bottom: 3pt;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 8.2pt;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      padding: 0.5pt 3pt;
+      border-radius: 2px;
+      color: var(--navy);
+    }
+
+    .num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Callouts & Notices */
+    .callout {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3.5px solid var(--teal);
+      padding: 8pt 10pt;
+      margin: 8pt 0 10pt 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .callout.warning {
+      background: var(--crimson-soft);
+      border-color: #E5B9B5;
+      border-left-color: var(--crimson);
+    }
+
+    .callout-title {
+      font-family: var(--font-display);
+      font-size: 8.6pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--navy);
+      margin: 0 0 3pt 0;
+    }
+
+    .callout.warning .callout-title {
+      color: var(--crimson);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6pt 0 11pt 0;
+      font-size: 8.1pt;
+      line-height: 1.36;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    table.allow-break {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    table.allow-break tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    thead {
+      display: table-header-group;
+    }
+
+    th {
+      background: var(--navy);
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-weight: 600;
+      text-align: left;
+      padding: 5pt 6pt;
+      border: 0.75px solid var(--navy);
+      font-size: 7.7pt;
+      letter-spacing: 0.02em;
+    }
+
+    td {
+      padding: 4.5pt 6pt;
+      border: 0.6px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+
+    td.mono, th.mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pass-tag {
+      display: inline-block;
+      background: var(--pass-bg);
+      color: var(--pass-ink);
+      border: 0.75px solid #96C9AE;
+      font-family: var(--font-mono);
+      font-size: 7.3pt;
+      font-weight: 700;
+      padding: 1pt 5pt;
+      letter-spacing: 0.04em;
+    }
+
+    .warn-text {
+      color: var(--crimson);
+      font-weight: 600;
+    }
+
+    .teal-text {
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    /* Equation Cards */
+    .eq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7pt;
+      margin: 6pt 0 10pt 0;
+    }
+
+    .eq-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 7pt 9pt;
+      margin: 5pt 0 8pt 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .eq-grid .eq-block {
+      margin: 0;
+    }
+
+    .eq-label {
+      font-family: var(--font-mono);
+      font-size: 7.2pt;
+      font-weight: 700;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 3pt;
+    }
+
+    .eq-math {
+      font-family: var(--font-mono);
+      font-size: 8.8pt;
+      color: var(--ink);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .eq-note {
+      font-size: 7.7pt;
+      color: var(--muted);
+      margin-top: 3pt;
+    }
+
+    /* Schematic Figure */
+    figure.schematic {
+      margin: 8pt 0 11pt 0;
+      padding: 9pt 10pt 7pt 10pt;
+      background: #FAFBFD;
+      border: 1px solid var(--border);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    figure.schematic svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    figure.schematic figcaption {
+      font-size: 7.8pt;
+      color: var(--muted);
+      margin-top: 6pt;
+      padding-top: 5pt;
+      border-top: 0.6px solid var(--border);
+    }
+
+    /* Palette Swatches */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7pt;
+      margin: 7pt 0 10pt 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .swatch-card {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .swatch-bar {
+      height: 24pt;
+      display: flex;
+    }
+
+    .swatch-half {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 6.8pt;
+      font-weight: 700;
+    }
+
+    .swatch-info {
+      padding: 5pt 6pt;
+      font-size: 7.4pt;
+      line-height: 1.3;
+    }
+
+    .swatch-info strong {
+      display: block;
+      color: var(--navy);
+      font-size: 7.8pt;
+      margin-bottom: 2pt;
+    }
+
+    /* Mode Summary Strip */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7pt;
+      margin: 7pt 0 10pt 0;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .mode-box {
+      border: 1px solid var(--border);
+      border-top: 2.5px solid var(--teal);
+      background: var(--panel);
+      padding: 7pt 8pt;
+    }
+
+    .mode-box.challenge {
+      border-top-color: var(--crimson);
+    }
+
+    .mode-box.submarine {
+      border-top-color: var(--navy);
+    }
+
+    .mode-box h4 {
+      font-family: var(--font-display);
+      font-size: 8.8pt;
+      color: var(--navy);
+      margin: 0 0 3pt 0;
+    }
+
+    .mode-box p {
+      font-size: 7.9pt;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* Source Code Appendix */
+    .page-break-before {
+      break-before: page;
+      page-break-before: always;
+    }
+
+    .code-file-header {
+      background: var(--navy);
+      color: #FFFFFF;
+      font-family: var(--font-mono);
+      font-size: 8.2pt;
+      font-weight: 600;
+      padding: 4.5pt 8pt;
+      margin-top: 10pt;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .code-file-header span.file-meta {
+      font-weight: 400;
+      color: #C7D7E5;
+      font-size: 7.3pt;
+    }
+
+    pre.source-code {
+      margin: 0 0 6pt 0;
+      padding: 6.5pt 8pt;
+      background: #F7F9FB;
+      border: 0.75px solid var(--border);
+      border-top: none;
+      font-family: var(--font-mono);
+      font-size: 6.9pt;
+      line-height: 1.34;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      tab-size: 4;
+    }
+
+    pre.source-code code {
+      background: transparent;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    section.avoid-split {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    footer.doc-footer {
+      margin-top: 8pt;
+      padding-top: 6pt;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12pt;
+      font-family: var(--font-mono);
+      font-size: 7.2pt;
+      color: var(--muted);
+      white-space: nowrap;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+  </style>
+</head>
+<body>
+  <div class="document-shell">
+    <header class="doc-header">
+      <div class="masthead-top">
+        <div class="brand-lockup">
+          <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+            <rect x="1" y="1" width="32" height="32" rx="3" fill="#F3F5F7" stroke="#1F364D" stroke-width="1.5" />
+            <circle cx="17" cy="17" r="9.5" fill="none" stroke="#1F364D" stroke-width="2" />
+            <line x1="4.5" y1="17" x2="29.5" y2="17" stroke="#B83227" stroke-width="2.2" />
+            <line x1="17" y1="6.5" x2="17" y2="12.5" stroke="#0A6C86" stroke-width="1.8" />
+          </svg>
+          <div>
+            <p class="doc-kicker">CDL-SPEC-1.0.0 | Technical Physics &amp; Verification Report</p>
+            <h1>Cargo Draft Lab</h1>
+            <p class="doc-subtitle">1-DOF Vertical Heave, Archimedes Buoyancy, Plimsoll Load-Line &amp; Submarine Ballast Simulator</p>
+          </div>
+        </div>
+        <div class="status-stamp">
+          <strong>VERIFICATION: 5 / 5 PASS</strong>
+          pytest: 15 / 15 passed (1.66 s)<br />
+          self-test: 0.3151 s | RK4 120 Hz
+        </div>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-cell">
+          <span class="meta-label">Backend Engine</span>
+          <span class="meta-value">cargo-draft-lab-python v1.0.0</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Integrator</span>
+          <span class="meta-value">Classical RK4 (dt = 1/120 s)</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Stack</span>
+          <span class="meta-value">Python FastAPI + React/Canvas</span>
+        </div>
+        <div class="meta-cell">
+          <span class="meta-label">Coordinate Axis</span>
+          <span class="meta-value">1-DOF Heave (d &gt;= 0 downward)</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- SECTION 1 -->
+      <section>
+        <h2><span class="sec-num">01</span> Executive Overview</h2>
+        <p>
+          <strong>Cargo Draft Lab</strong> is a quantitative naval-hydrostatics laboratory simulator built to demonstrate Archimedes' principle, damped vertical heave dynamics, Plimsoll load-line safety margins, and submarine neutral buoyancy. The physical model represents a rectangular box-hull vessel of length <em>L</em>, beam <em>B</em>, and hull depth <em>H</em> moving strictly along one vertical heave degree of freedom in a calm fluid column of density <em>&rho;</em> under gravitational acceleration <em>g</em>.
+        </p>
+
+        <div class="mode-grid">
+          <div class="mode-box">
+            <h4>Lab Mode (<code>lab</code>)</h4>
+            <p>Unconstrained parameter study across hull dimensions, container count, fluid density (fresh, seawater, brine), gravity (Earth, Moon, Mars), and heave drag coefficient <em>C<sub>d</sub></em>.</p>
+          </div>
+          <div class="mode-box challenge">
+            <h4>Load to the Line (<code>challenge</code>)</h4>
+            <p>Operational loading task referencing the Plimsoll mark at <code>0.75 * H</code> (3.00 m default). Demonstrates the 2.50% draft increase when moving from seawater into fresh water.</p>
+          </div>
+          <div class="mode-box submarine">
+            <h4>Submarine Ballast (<code>submarine</code>)</h4>
+            <p>Internal tank fill fraction <em>f</em> in [0, 1] replaces deck cargo, letting users hold neutral submerged trim (<code>|M - M_max|/M_max &lt; 0.005</code>) or surface and dive.</p>
+          </div>
+        </div>
+
+        <h3>Hybrid Python FastAPI and React/Canvas Architecture</h3>
+        <p>
+          Computation and visualization are cleanly separated across two synchronized layers:
+        </p>
+        <ul>
+          <li><strong>Authoritative Python Backend (<code>backend/</code>):</strong> Pure, side-effect-free equations reside in <code>backend/physics.py</code>, cited physical constants and parameter bounds reside in <code>backend/constants.py</code>, and the automated five-proof verification harness resides in <code>backend/validation.py</code>. The FastAPI service (<code>backend/app.py</code>) exposes five JSON endpoints: <code>GET /api/health</code>, <code>GET /api/constants</code>, <code>POST /api/validate</code>, <code>POST /api/simulate</code>, and <code>GET /api/self-test</code>.</li>
+          <li><strong>Interactive Web Laboratory (<code>frontend/</code>):</strong> Built with React, TypeScript, Vite, HTML5 Canvas, and Framer Motion. A pure TypeScript mirror of <code>backend/physics.py</code> steps a fixed <code>dt = 1/120 s</code> RK4 accumulator inside <code>requestAnimationFrame</code> for smooth 60 FPS motion, while live API requests to FastAPI provide authoritative validation, trajectory synthesis, and on-demand self-test verification.</li>
+        </ul>
+
+        <figure class="schematic">
+          <svg viewBox="0 0 680 238" role="img" aria-label="1-DOF box-hull barge free-body diagram and coordinate convention">
+            <!-- Sky & Water Column -->
+            <rect x="0" y="0" width="680" height="76" fill="#F8FAFC" />
+            <rect x="0" y="76" width="680" height="130" fill="#EBF5F8" />
+            <rect x="0" y="206" width="680" height="32" fill="#DCE5EE" />
+
+            <!-- Calm Waterline d = 0 -->
+            <line x1="0" y1="76" x2="680" y2="76" stroke="#0A6C86" stroke-width="2" />
+            <text x="10" y="38" fill="#0A6C86" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.6" font-weight="700">WATERLINE</text>
+            <text x="10" y="50" fill="#0A6C86" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.6" font-weight="700">d = 0.00 m</text>
+            <line x1="34" y1="54" x2="34" y2="74" stroke="#0A6C86" stroke-width="1" stroke-dasharray="2,2" />
+
+            <!-- Seabed d_tank = 12.0 m -->
+            <line x1="0" y1="206" x2="680" y2="206" stroke="#1F364D" stroke-width="1.8" stroke-dasharray="6,3" />
+            <text x="12" y="225" fill="#1F364D" font-family="IBM Plex Mono, Consolas, monospace" font-size="9" font-weight="700">SEABED CLAMP  d_tank = max(12.0, 3.0 * H) = 12.00 m  (v = 0 on contact)</text>
+
+            <!-- Container Cargo Stack on Deck -->
+            <g fill="#4A5C6D" stroke="#1F364D" stroke-width="1">
+              <rect x="246" y="38" width="34" height="13" />
+              <rect x="283" y="38" width="34" height="13" />
+              <rect x="320" y="38" width="34" height="13" />
+              <rect x="357" y="38" width="34" height="13" />
+              <rect x="394" y="38" width="34" height="13" />
+              <rect x="264" y="23" width="34" height="13" />
+              <rect x="301" y="23" width="34" height="13" />
+              <rect x="338" y="23" width="34" height="13" />
+              <rect x="375" y="23" width="34" height="13" />
+            </g>
+            <text x="337" y="15" text-anchor="middle" fill="#4A5C6D" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8.8" font-weight="600">Deck Cargo: N_c containers x m_c</text>
+
+            <!-- Rectangular Box Hull (L x B x H) -->
+            <!-- Above water portion (freeboard) -->
+            <rect x="232" y="52" width="210" height="24" fill="#FFFFFF" stroke="#1F364D" stroke-width="2" />
+            <!-- Submerged portion (draft d) -->
+            <rect x="232" y="76" width="210" height="66" fill="#BBDCE6" stroke="#1F364D" stroke-width="2" />
+
+            <!-- Plimsoll Load Line on Hull (0.75 * H = 3.00 m) -->
+            <line x1="232" y1="84" x2="442" y2="84" stroke="#B83227" stroke-width="1.6" stroke-dasharray="5,3" />
+            <circle cx="458" cy="84" r="4.8" fill="none" stroke="#B83227" stroke-width="1.4" />
+            <line x1="450" y1="84" x2="466" y2="84" stroke="#B83227" stroke-width="1.4" />
+            <text x="472" y="87" fill="#B83227" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.4" font-weight="700">Plimsoll Line: 0.75 H = 3.00 m</text>
+
+            <!-- Hull Labels -->
+            <text x="337" y="109" text-anchor="middle" fill="#1F364D" font-family="IBM Plex Sans, Arial, sans-serif" font-size="9.6" font-weight="700">Box Hull (L x B x H)</text>
+            <text x="337" y="124" text-anchor="middle" fill="#0A6C86" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.3">V_sub = L * B * clamp(d, 0, H)</text>
+
+            <!-- Dimension Callouts Left of Hull (cleanly separated columns) -->
+            <!-- Total Depth H at x=82 -->
+            <line x1="82" y1="52" x2="82" y2="142" stroke="#4A5C6D" stroke-width="1.1" stroke-dasharray="3,2" />
+            <line x1="77" y1="52" x2="87" y2="52" stroke="#4A5C6D" stroke-width="1.1" />
+            <line x1="77" y1="142" x2="87" y2="142" stroke="#4A5C6D" stroke-width="1.1" />
+            <text x="73" y="100" text-anchor="end" fill="#4A5C6D" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.2" font-weight="600">H = 4.0 m</text>
+
+            <!-- Freeboard H - d at x=214 -->
+            <line x1="214" y1="52" x2="214" y2="76" stroke="#1F364D" stroke-width="1.3" />
+            <line x1="209" y1="52" x2="219" y2="52" stroke="#1F364D" stroke-width="1.3" />
+            <line x1="209" y1="76" x2="219" y2="76" stroke="#1F364D" stroke-width="1.3" />
+            <text x="204" y="67" text-anchor="end" fill="#1F364D" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.3">freeboard = H - d</text>
+
+            <!-- Draft d at x=214 -->
+            <line x1="214" y1="76" x2="214" y2="142" stroke="#0A6C86" stroke-width="1.6" />
+            <line x1="209" y1="142" x2="219" y2="142" stroke="#0A6C86" stroke-width="1.6" />
+            <text x="204" y="113" text-anchor="end" fill="#0A6C86" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.6" font-weight="700">draft d (+down)</text>
+
+            <!-- Force Vectors Right Panel -->
+            <!-- Upward Buoyancy F_b -->
+            <line x1="510" y1="162" x2="510" y2="112" stroke="#0A6C86" stroke-width="3.2" />
+            <polygon points="510,102 503,115 517,115" fill="#0A6C86" />
+            <text x="524" y="118" fill="#0A6C86" font-family="IBM Plex Mono, Consolas, monospace" font-size="9" font-weight="700">F_b = rho * g * V_sub</text>
+            <text x="524" y="130" fill="#0A6C86" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8">Upward Buoyancy (#0A6C86)</text>
+
+            <!-- Downward Weight W -->
+            <line x1="510" y1="144" x2="510" y2="188" stroke="#B83227" stroke-width="3.2" />
+            <polygon points="510,198 503,185 517,185" fill="#B83227" />
+            <text x="524" y="177" fill="#B83227" font-family="IBM Plex Mono, Consolas, monospace" font-size="9" font-weight="700">W = M * g</text>
+            <text x="524" y="189" fill="#B83227" font-family="IBM Plex Sans, Arial, sans-serif" font-size="8">Downward Weight (#B83227)</text>
+
+            <!-- Quadratic Drag & EOM Summary -->
+            <text x="12" y="172" fill="#1F364D" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.2">F_drag = 0.5 * rho * C_d * (L * B) * v * |v|  (opposes velocity v)</text>
+            <text x="12" y="186" fill="#1F364D" font-family="IBM Plex Mono, Consolas, monospace" font-size="8.2">EOM:  M * (d^2 d / dt^2) = W - F_b(d) - F_drag(v)</text>
+          </svg>
+          <figcaption>
+            <strong>Figure 1.</strong> 1-DOF box-hull coordinate convention and force balance. Draft <em>d</em> increases downward from the calm waterline (<em>d</em> = 0 m) toward the seabed clamp (<em>d</em><sub>tank</sub> = 12.00 m). Hydrodynamic Teal-Blue encodes upward buoyancy <em>F<sub>b</sub></em>; Signal Crimson encodes downward weight <em>W</em> and the Plimsoll load line.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section>
+        <h2><span class="sec-num">02</span> Complete Variables and Units</h2>
+        <p>
+          All state variables, geometric parameters, and force quantities follow SI units internally in <code>backend/physics.py</code>, with metric tonnes (<code>1 t = 1,000 kg</code>) and Meganewtons (<code>1 MN = 10^6 N</code>) used as ergonomic display units.
+        </p>
+
+        <table class="allow-break">
+          <thead>
+            <tr>
+              <th style="width: 11%;">Symbol</th>
+              <th style="width: 22%;">Code Identifier</th>
+              <th style="width: 31%;">Physical Quantity</th>
+              <th style="width: 15%;">Unit (Display)</th>
+              <th style="width: 21%;">Domain / Sign Convention</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">L, B, H</td>
+              <td class="mono">length_m, beam_m, height_m</td>
+              <td>Rectangular hull length, beam, and molded depth</td>
+              <td class="mono">m</td>
+              <td>L:[20,120], B:[4,30], H:[2,10]</td>
+            </tr>
+            <tr>
+              <td class="mono">m_hull</td>
+              <td class="mono">hull_mass_t * 1000</td>
+              <td>Empty structural steel hull mass</td>
+              <td class="mono">kg (t)</td>
+              <td>[100, 1500] t</td>
+            </tr>
+            <tr>
+              <td class="mono">m_cargo</td>
+              <td class="mono">containers * container_mass_t * 1000</td>
+              <td>Total loaded deck container mass</td>
+              <td class="mono">kg (t)</td>
+              <td>0 to 250 units x [1, 100] t</td>
+            </tr>
+            <tr>
+              <td class="mono">M</td>
+              <td class="mono">total_mass_kg / total_mass_t</td>
+              <td>Total vessel mass (hull + cargo or submarine ballast)</td>
+              <td class="mono">kg (t)</td>
+              <td>M &gt; 0</td>
+            </tr>
+            <tr>
+              <td class="mono">M_max</td>
+              <td class="mono">max_displacement_kg</td>
+              <td>Maximum displaced fluid mass (rho * L * B * H)</td>
+              <td class="mono">kg (t)</td>
+              <td>Float/sink threshold</td>
+            </tr>
+            <tr>
+              <td class="mono">rho</td>
+              <td class="mono">fluid_density</td>
+              <td>Ambient fluid mass density</td>
+              <td class="mono">kg/m^3</td>
+              <td>[500, 2000] kg/m^3</td>
+            </tr>
+            <tr>
+              <td class="mono">g</td>
+              <td class="mono">gravity</td>
+              <td>Gravitational acceleration</td>
+              <td class="mono">m/s^2</td>
+              <td>[0.1, 30.0] m/s^2</td>
+            </tr>
+            <tr>
+              <td class="mono">d</td>
+              <td class="mono">draft_m</td>
+              <td>Instantaneous keel draft below calm waterline</td>
+              <td class="mono">m</td>
+              <td>[0, d_tank], positive downward</td>
+            </tr>
+            <tr>
+              <td class="mono">d_eq</td>
+              <td class="mono">equilibrium_draft_m</td>
+              <td>Static Archimedes equilibrium draft</td>
+              <td class="mono">m</td>
+              <td>Floating equilibrium if d_eq &lt;= H</td>
+            </tr>
+            <tr>
+              <td class="mono">freeboard</td>
+              <td class="mono">freeboard_m</td>
+              <td>Deck height above calm waterline (H - d)</td>
+              <td class="mono">m</td>
+              <td>Negative when fully submerged</td>
+            </tr>
+            <tr>
+              <td class="mono">v</td>
+              <td class="mono">velocity_mps</td>
+              <td>Vertical heave velocity (dd/dt)</td>
+              <td class="mono">m/s</td>
+              <td>Positive downward</td>
+            </tr>
+            <tr>
+              <td class="mono">a</td>
+              <td class="mono">accel_down_mps2</td>
+              <td>Vertical heave acceleration (d^2 d / dt^2)</td>
+              <td class="mono">m/s^2</td>
+              <td>Positive downward</td>
+            </tr>
+            <tr>
+              <td class="mono">F_b</td>
+              <td class="mono">buoyancy_n</td>
+              <td>Upward Archimedes buoyant force</td>
+              <td class="mono">N (MN)</td>
+              <td>Positive upward</td>
+            </tr>
+            <tr>
+              <td class="mono">W</td>
+              <td class="mono">weight_n</td>
+              <td>Downward gravitational weight (M * g)</td>
+              <td class="mono">N (MN)</td>
+              <td>Positive downward</td>
+            </tr>
+            <tr>
+              <td class="mono">F_drag</td>
+              <td class="mono">drag_n</td>
+              <td>Quadratic hydrodynamic heave drag force</td>
+              <td class="mono">N (MN)</td>
+              <td>Opposes velocity v</td>
+            </tr>
+            <tr>
+              <td class="mono">F_net</td>
+              <td class="mono">static_net_up_n</td>
+              <td>Static net upward force (F_b - W); dynamic ODE uses W - F_b - F_drag</td>
+              <td class="mono">N (MN)</td>
+              <td>Static: +up; ODE: +down</td>
+            </tr>
+            <tr>
+              <td class="mono">C_d</td>
+              <td class="mono">drag_coeff</td>
+              <td>Dimensionless quadratic heave drag coefficient</td>
+              <td class="mono">dimensionless</td>
+              <td>[0.0, 5.0]</td>
+            </tr>
+            <tr>
+              <td class="mono">T</td>
+              <td class="mono">analytical_heave_period_s</td>
+              <td>Undamped linear natural heave oscillation period</td>
+              <td class="mono">s</td>
+              <td>Valid for 0 &lt; d &lt; H</td>
+            </tr>
+            <tr>
+              <td class="mono">f</td>
+              <td class="mono">ballast_fraction</td>
+              <td>Submarine internal ballast fill fraction</td>
+              <td class="mono">dimensionless</td>
+              <td>[0.0, 1.0]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="page-break-before">
+        <h2><span class="sec-num">03</span> Governing Equations and RK4 Numerical Scheme</h2>
+        <p>
+          Every formula below reproduces the live pure-function model in <code>backend/physics.py</code>.
+        </p>
+
+        <div class="eq-grid">
+          <div class="eq-block">
+            <div class="eq-label">3.1 Total Mass M (kg)</div>
+            <div class="eq-math">
+              Barge / Challenge: M = m_hull + N_c * m_c<br />
+              Submarine Mode:    M = m_hull + f * rho * (L * B * H)
+            </div>
+            <div class="eq-note">Internal ballast holds fraction f of enclosed hull volume L*B*H filled with ambient fluid of density rho.</div>
+          </div>
+
+          <div class="eq-block">
+            <div class="eq-label">3.2 Submerged Volume V_sub (m^3)</div>
+            <div class="eq-math">
+              V_sub(d) = L * B * min(max(d, 0), H)
+            </div>
+            <div class="eq-note">Clamping at 0 represents full emergence above waterline; clamping at H represents full hull submergence.</div>
+          </div>
+
+          <div class="eq-block">
+            <div class="eq-label">3.3 Buoyant Force F_b &amp; Weight W (N)</div>
+            <div class="eq-math">
+              F_b(d) = rho * g * V_sub(d)   (upward)<br />
+              W      = M * g                (downward)<br />
+              F_net,up = F_b(d) - W         (static net upward)
+            </div>
+            <div class="eq-note">Maximum possible upward buoyancy is F_b,max = rho * g * L * B * H.</div>
+          </div>
+
+          <div class="eq-block">
+            <div class="eq-label">3.4 Equilibrium Draft d_eq &amp; Freeboard (m)</div>
+            <div class="eq-math">
+              d_eq = M / (rho * L * B)<br />
+              freeboard = H - d
+            </div>
+            <div class="eq-note">Gravity g cancels identically from F_b(d_eq) = W. Floating equilibrium exists only if d_eq &lt;= H.</div>
+          </div>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-label">3.5 Vertical Heave Equation of Motion with Quadratic Drag</div>
+          <div class="eq-math">
+            F_drag(v) = 0.5 * rho * C_d * (L * B) * v * |v|<br />
+            M * (d^2 d / dt^2) = W - F_b(d) - F_drag(v)   ==&gt;   a_down(d, v) = (W - F_b(d) - F_drag(v)) / M
+          </div>
+          <div class="eq-note">Quadratic form drag acts over the horizontal hull bottom area A_w = L * B and always opposes vertical velocity v = dd/dt.</div>
+        </div>
+
+        <div class="eq-grid">
+          <div class="eq-block">
+            <div class="eq-label">3.6 Sinking Criterion &amp; Status Rules</div>
+            <div class="eq-math">
+              M_max = rho * L * B * H<br />
+              Sinks iff: M &gt; M_max  (d_eq &gt; H, W &gt; F_b,max)
+            </div>
+            <div class="eq-note">
+              Barge: <code>sunk</code> if M &gt; M_max &amp; d &gt;= H; <code>overloaded</code> if M &gt; M_max or d_eq &gt; r_load*H; else <code>floating</code>. Submarine: <code>neutral</code> if |M - M_max|/M_max &lt; 0.005 &amp; d &gt;= H.
+            </div>
+          </div>
+
+          <div class="eq-block">
+            <div class="eq-label">3.7 Analytical Undamped Heave Period</div>
+            <div class="eq-math">
+              k = rho * g * L * B<br />
+              T = 2 * pi * sqrt(M / (rho * g * L * B))
+            </div>
+            <div class="eq-note">Derived from M*d'' + k*(d - d_eq) = 0 for 0 &lt; d &lt; H without hydrodynamic added mass. Equivalently T = 2*pi*sqrt(d_eq / g).</div>
+          </div>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-label">3.8 Submarine Neutral Ballast Condition</div>
+          <div class="eq-math">
+            f_neutral = clamp(1.0 - m_hull / (rho * L * B * H), 0.0, 1.0)
+          </div>
+          <div class="eq-note">Sets total mass M = m_hull + f_neutral * M_max equal to full-hull displacement M_max so F_b == W at any submerged depth d &gt;= H.</div>
+        </div>
+
+        <div class="eq-block">
+          <div class="eq-label">3.9 Classical 4th-Order Runge-Kutta (RK4) Fixed Time-Step Integrator (dt = 1/120 s)</div>
+          <div class="eq-math">
+            k1_d = v_n,                        k1_v = a_down(d_n, v_n)<br />
+            k2_d = v_n + 0.5 * dt * k1_v,      k2_v = a_down(d_n + 0.5 * dt * k1_d, v_n + 0.5 * dt * k1_v)<br />
+            k3_d = v_n + 0.5 * dt * k2_v,      k3_v = a_down(d_n + 0.5 * dt * k2_d, v_n + 0.5 * dt * k2_v)<br />
+            k4_d = v_n + dt * k3_v,            k4_v = a_down(d_n + dt * k3_d, v_n + dt * k3_v)<br />
+            d_(n+1) = d_n + (dt / 6) * (k1_d + 2*k2_d + 2*k3_d + k4_d)<br />
+            v_(n+1) = v_n + (dt / 6) * (k1_v + 2*k2_v + 2*k3_v + k4_v)
+          </div>
+          <div class="eq-note">
+            Hard domain clamp per step: if d_(n+1) &lt;= 0 then (d, v) = (0.0, 0.0); if d_(n+1) &gt;= tank_depth_m then (d, v) = (tank_depth_m, 0.0). At dt = 1/120 s (120 Hz), one 3.4642 s heave cycle spans ~416 RK4 steps.
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section class="avoid-split">
+        <h2><span class="sec-num">04</span> Cited Physical Constants</h2>
+        <p>
+          Every physical constant in <code>backend/constants.py</code> carries an explicit bibliographic source citation. No unverified or fabricated physical constants exist in the solver.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 23%;">Constant / Preset</th>
+              <th style="width: 22%;">Code Key</th>
+              <th style="width: 11%;">Exact Value</th>
+              <th style="width: 12%;">Unit</th>
+              <th style="width: 32%;">Bibliographic Source Citation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Earth (Standard Gravity)</td>
+              <td class="mono">GRAVITY_PRESETS["earth"]</td>
+              <td class="mono">9.80665</td>
+              <td class="mono">m/s^2</td>
+              <td>BIPM / NIST SP 330, 9th SI Brochure (exact defined standard gravity)</td>
+            </tr>
+            <tr>
+              <td>Moon Surface Gravity</td>
+              <td class="mono">GRAVITY_PRESETS["moon"]</td>
+              <td class="mono">1.62</td>
+              <td class="mono">m/s^2</td>
+              <td>NASA Goddard Space Flight Center Moon Fact Sheet</td>
+            </tr>
+            <tr>
+              <td>Mars Surface Gravity</td>
+              <td class="mono">GRAVITY_PRESETS["mars"]</td>
+              <td class="mono">3.71</td>
+              <td class="mono">m/s^2</td>
+              <td>NASA Goddard Space Flight Center Mars Fact Sheet</td>
+            </tr>
+            <tr>
+              <td>Fresh Water (4 C)</td>
+              <td class="mono">FLUID_PRESETS["fresh"]</td>
+              <td class="mono">1000.0</td>
+              <td class="mono">kg/m^3</td>
+              <td>Pure water at 4 C reference; Frank M. White, <em>Fluid Mechanics</em></td>
+            </tr>
+            <tr>
+              <td>Seawater (ITTC Nominal)</td>
+              <td class="mono">FLUID_PRESETS["seawater"]</td>
+              <td class="mono">1025.0</td>
+              <td class="mono">kg/m^3</td>
+              <td>Standard naval architecture / Archimedes seawater reference; ITTC 2011 nominal</td>
+            </tr>
+            <tr>
+              <td>Saturated Brine (20 C)</td>
+              <td class="mono">FLUID_PRESETS["brine"]</td>
+              <td class="mono">1200.0</td>
+              <td class="mono">kg/m^3</td>
+              <td>Saturated NaCl brine at 20 C (~26% w/w); <em>CRC Handbook of Chemistry and Physics</em></td>
+            </tr>
+            <tr>
+              <td>Box-Hull Heave Drag</td>
+              <td class="mono">DRAG_COEFF_DEFAULT</td>
+              <td class="mono">1.05</td>
+              <td class="mono">dimensionless</td>
+              <td>Flat rectangular prism / box-hull normal to heave flow; Sighard F. Hoerner, <em>Fluid-Dynamic Drag</em>; Frank M. White, <em>Fluid Mechanics</em></td>
+            </tr>
+            <tr>
+              <td>Small-Drag Validation Value</td>
+              <td class="mono">DRAG_COEFF_SMALL_TEST</td>
+              <td class="mono">0.05</td>
+              <td class="mono">dimensionless</td>
+              <td>Small-drag test value used in validation to isolate undamped heave period</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 5 -->
+      <section class="avoid-split">
+        <h2><span class="sec-num">05</span> Assumed Design Defaults and Validation Bounds</h2>
+
+        <div class="callout warning">
+          <div class="callout-title">Assumed Design Defaults, NOT Real-Ship Specifications</div>
+          <p style="margin: 0;">
+            The geometry, structural hull mass, container mass, Plimsoll load-line ratio, and tank depth listed below are <strong>ASSUMED DESIGN DEFAULTS</strong> chosen for a simplified rectangular box-hull teaching model. They do not represent measurements, stability booklets, or classification-society specifications of any real commercial ship or submarine.
+          </p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 24%;">Parameter</th>
+              <th style="width: 20%;">Code Key</th>
+              <th style="width: 13%;">Default</th>
+              <th style="width: 17%;">Inclusive Bounds</th>
+              <th style="width: 26%;">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Hull Length (L)</td>
+              <td class="mono">length_m</td>
+              <td class="mono">60.0 m</td>
+              <td class="mono">20.0 to 120.0 m</td>
+              <td>Assumed teaching box-hull length</td>
+            </tr>
+            <tr>
+              <td>Hull Beam (B)</td>
+              <td class="mono">beam_m</td>
+              <td class="mono">12.0 m</td>
+              <td class="mono">4.0 to 30.0 m</td>
+              <td>Default waterplane L*B = 720 m^2</td>
+            </tr>
+            <tr>
+              <td>Hull Depth (H)</td>
+              <td class="mono">height_m</td>
+              <td class="mono">4.0 m</td>
+              <td class="mono">2.0 to 10.0 m</td>
+              <td>Enclosed volume L*B*H = 2,880 m^3</td>
+            </tr>
+            <tr>
+              <td>Empty Hull Mass</td>
+              <td class="mono">hull_mass_t</td>
+              <td class="mono">400.0 t</td>
+              <td class="mono">100.0 to 1500.0 t</td>
+              <td>400,000 kg; empty seawater d_eq = 0.5420 m</td>
+            </tr>
+            <tr>
+              <td>Container Unit Mass</td>
+              <td class="mono">container_mass_t</td>
+              <td class="mono">20.0 t</td>
+              <td class="mono">1.0 to 100.0 t</td>
+              <td>20,000 kg per nominal deck container</td>
+            </tr>
+            <tr>
+              <td>Container Count</td>
+              <td class="mono">containers</td>
+              <td class="mono">0</td>
+              <td class="mono">0 to 250 (int)</td>
+              <td>Validation baseline uses 90 containers</td>
+            </tr>
+            <tr>
+              <td>Plimsoll Load-Line Ratio</td>
+              <td class="mono">load_line_ratio</td>
+              <td class="mono">0.75</td>
+              <td class="mono">0.1 to 0.95</td>
+              <td>Plimsoll mark at 0.75 * H = 3.00 m</td>
+            </tr>
+            <tr>
+              <td>Test-Tank Seabed Depth</td>
+              <td class="mono">tank_depth_m(H)</td>
+              <td class="mono">12.0 m</td>
+              <td class="mono">max(12.0, 3.0 * H)</td>
+              <td>&gt;= 2 hull depths beneath submerged deck</td>
+            </tr>
+            <tr>
+              <td>Submarine Ballast Fraction</td>
+              <td class="mono">ballast_fraction</td>
+              <td class="mono">0.0</td>
+              <td class="mono">0.0 to 1.0</td>
+              <td>Seawater neutral trim at f = 0.8645</td>
+            </tr>
+            <tr>
+              <td>Fluid Density / Gravity / C_d</td>
+              <td class="mono">fluid_density, gravity, drag_coeff</td>
+              <td class="mono">1025 / 9.80665 / 1.05</td>
+              <td class="mono">[500,2000] / [0.1,30] / [0,5]</td>
+              <td>Defaults to seawater, Earth, box-hull drag</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section class="page-break-before">
+        <h2><span class="sec-num">06</span> Key Physical Insights Demonstrated</h2>
+        <p>
+          All reference values below are computed directly from <code>backend/physics.py</code> on the default teaching hull (60 x 12 x 4 m, 400 t hull, 20 t container).
+        </p>
+
+        <h3>6.1 Gravity Invariance of Equilibrium Draft vs g-Dependence of Heave Period</h3>
+        <p>
+          In static equilibrium, <code>g</code> cancels identically between weight <code>W = M * g</code> and buoyancy <code>F_b = rho * g * L * B * d_eq</code>, leaving <code>d_eq = M / (rho * L * B)</code> invariant across planets. In contrast, hydrostatic restoring stiffness <code>k = rho * g * L * B</code> scales directly with <code>g</code>, so heave period <code>T</code> scales as <code>1 / sqrt(g)</code>:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Gravity Preset</th>
+              <th class="mono">g (m/s^2)</th>
+              <th class="mono">Weight W (MN)</th>
+              <th class="mono">Equilibrium Draft d_eq (m)</th>
+              <th class="mono">Heave Period T (s)</th>
+              <th class="mono">Ratio T / T_Earth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Earth (90 containers, seawater)</td>
+              <td class="mono">9.80665</td>
+              <td class="mono">21.5746</td>
+              <td class="mono">2.981030</td>
+              <td class="mono">3.4642</td>
+              <td class="mono">1.0000</td>
+            </tr>
+            <tr>
+              <td>Mars (90 containers, seawater)</td>
+              <td class="mono">3.71</td>
+              <td class="mono">8.1620</td>
+              <td class="mono">2.981030</td>
+              <td class="mono">5.6322</td>
+              <td class="mono">1.6258</td>
+            </tr>
+            <tr>
+              <td>Moon (90 containers, seawater)</td>
+              <td class="mono">1.62</td>
+              <td class="mono">3.5640</td>
+              <td class="mono">2.981030</td>
+              <td class="mono">8.5233</td>
+              <td class="mono">2.4604</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>6.2 Fresh-Water vs Seawater Draft Ratio (1.025) and Plimsoll Load-Line Shift</h3>
+        <p>
+          Moving at fixed mass from nominal seawater (<code>1025 kg/m^3</code>) into fresh water (<code>1000 kg/m^3</code>) increases equilibrium draft by the exact density ratio <code>1025 / 1000 = 1.0250</code> (+2.50%). At 90 containers (<code>2,200 t</code>), the hull sits safely at <code>2.9810 m</code> in seawater (1.90 cm below the 3.00 m Plimsoll line) but drops 7.45 cm deeper to <code>3.0556 m</code> in fresh water, crossing the Plimsoll mark and triggering an <code>overloaded</code> warning:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Ambient Fluid</th>
+              <th class="mono">rho (kg/m^3)</th>
+              <th class="mono">d_eq at 90 Cnt (m)</th>
+              <th class="mono">Margin to 3.00 m</th>
+              <th>Status (90 Cnt)</th>
+              <th class="mono">Load-Line Limit (3.00 m)</th>
+              <th class="mono">Max Displacement M_max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fresh Water (4 C)</td>
+              <td class="mono">1000.0</td>
+              <td class="mono">3.0556</td>
+              <td class="mono warn-text">-0.0556 m</td>
+              <td class="warn-text">overloaded</td>
+              <td class="mono">88.00 cnt (2,160 t)</td>
+              <td class="mono">2,880.0 t (124.00 cnt)</td>
+            </tr>
+            <tr>
+              <td>Seawater (ITTC)</td>
+              <td class="mono">1025.0</td>
+              <td class="mono">2.9810</td>
+              <td class="mono teal-text">+0.0190 m</td>
+              <td class="teal-text">floating</td>
+              <td class="mono">90.70 cnt (2,214 t)</td>
+              <td class="mono">2,952.0 t (127.60 cnt)</td>
+            </tr>
+            <tr>
+              <td>Saturated Brine</td>
+              <td class="mono">1200.0</td>
+              <td class="mono">2.5463</td>
+              <td class="mono teal-text">+0.4537 m</td>
+              <td class="teal-text">floating</td>
+              <td class="mono">109.60 cnt (2,592 t)</td>
+              <td class="mono">3,456.0 t (152.80 cnt)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>6.3 Sudden Nonlinear Transition from Floating to Sunk Above M_max</h3>
+        <p>
+          In seawater, maximum hull displacement is <code>M_max = 2,952,000 kg</code> (<code>2,952 t</code>; <code>F_b,max = 28.9492 MN</code>). At <strong>127 containers</strong> (<code>2,940 t</code>), the hull still balances at <code>d_eq = 3.9837 m</code> with 1.63 cm of freeboard. Adding one single 20 t container (<strong>128 containers</strong>, <code>2,960 t</code>) exceeds <code>M_max</code> by 8 t: once the deck submerges below <code>4.00 m</code>, restoring stiffness collapses from <code>7.237 MN/m</code> to zero and a persistent downward force of <code>78.45 kN</code> drives the vessel irreversibly to the <code>12.00 m</code> tank seabed.
+        </p>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section class="avoid-split">
+        <h2><span class="sec-num">07</span> Visual Encoding and Force-Arrow Color Rationale</h2>
+        <p>
+          The laboratory instrument palette uses three core functional colors plus neutrals, calibrated so that force semantics, WCAG 2.1 AA legibility, and color-vision deficiency (CVD) accessibility hold simultaneously in both light and dark modes.
+        </p>
+
+        <div class="swatch-grid">
+          <div class="swatch-card">
+            <div class="swatch-bar">
+              <div class="swatch-half" style="background: #0A6C86; color: #FFFFFF;">#0A6C86</div>
+              <div class="swatch-half" style="background: #38B2CE; color: #0F1720;">#38B2CE</div>
+            </div>
+            <div class="swatch-info">
+              <strong>Hydrodynamic Teal-Blue</strong>
+              Upward Buoyancy F_b &amp; water column. Light 6.00:1 / Dark 6.47:1.
+            </div>
+          </div>
+
+          <div class="swatch-card">
+            <div class="swatch-bar">
+              <div class="swatch-half" style="background: #B83227; color: #FFFFFF;">#B83227</div>
+              <div class="swatch-half" style="background: #F06458; color: #0F1720;">#F06458</div>
+            </div>
+            <div class="swatch-info">
+              <strong>Signal Crimson</strong>
+              Downward Weight W, Plimsoll line &amp; overload. Light 5.96:1 / Dark 5.12:1.
+            </div>
+          </div>
+
+          <div class="swatch-card">
+            <div class="swatch-bar">
+              <div class="swatch-half" style="background: #1F364D; color: #FFFFFF;">#1F364D</div>
+              <div class="swatch-half" style="background: #94B4D1; color: #0F1720;">#94B4D1</div>
+            </div>
+            <div class="swatch-info">
+              <strong>Steel Slate Navy</strong>
+              Hull geometry, rulers &amp; headers. Light 12.40:1 / Dark 7.45:1.
+            </div>
+          </div>
+
+          <div class="swatch-card">
+            <div class="swatch-bar">
+              <div class="swatch-half" style="background: #14202B; color: #FFFFFF;">#14202B</div>
+              <div class="swatch-half" style="background: #EAF0F6; color: #14202B;">#EAF0F6</div>
+            </div>
+            <div class="swatch-info">
+              <strong>Charcoal / Ice Ink</strong>
+              Primary copy &amp; numeric readouts. Light 16.52:1 / Dark 14.05:1.
+            </div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Semantic Token</th>
+              <th class="mono">Light Hex</th>
+              <th class="mono">on #FFFFFF</th>
+              <th class="mono">on #F3F5F7</th>
+              <th class="mono">Dark Hex</th>
+              <th class="mono">on #16222E</th>
+              <th class="mono">on #0F1720</th>
+              <th>WCAG AA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Buoyancy F_b (Hydrodynamic Teal-Blue)</td>
+              <td class="mono">#0A6C86</td>
+              <td class="mono">6.00:1</td>
+              <td class="mono">5.49:1</td>
+              <td class="mono">#38B2CE</td>
+              <td class="mono">6.47:1</td>
+              <td class="mono">7.24:1</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td>Weight W / Plimsoll (Signal Crimson)</td>
+              <td class="mono">#B83227</td>
+              <td class="mono">5.96:1</td>
+              <td class="mono">5.45:1</td>
+              <td class="mono">#F06458</td>
+              <td class="mono">5.12:1</td>
+              <td class="mono">5.73:1</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td>Hull &amp; Structural Headers (Slate Navy)</td>
+              <td class="mono">#1F364D</td>
+              <td class="mono">12.40:1</td>
+              <td class="mono">11.35:1</td>
+              <td class="mono">#94B4D1</td>
+              <td class="mono">7.45:1</td>
+              <td class="mono">8.34:1</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td>Primary Instrument Ink</td>
+              <td class="mono">#14202B</td>
+              <td class="mono">16.52:1</td>
+              <td class="mono">15.12:1</td>
+              <td class="mono">#EAF0F6</td>
+              <td class="mono">14.05:1</td>
+              <td class="mono">15.72:1</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout-title">Color-Vision Deficiency (CVD) &amp; Multi-Channel Redundancy</div>
+          <p style="margin: 0;">
+            Choosing <strong>blue-teal vs crimson-red</strong> instead of green vs red preserves high chromatic separation for users with deuteranopia or protanopia (red-green color-vision deficiency). Force interpretation never depends on hue alone: upward and downward vector arrowheads encode direction geometrically, and every vector is paired with explicit <code>F_b</code> / <code>W</code> symbols and tabular numeric labels in <code>N</code> or <code>MN</code>.
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 8 -->
+      <section class="avoid-split">
+        <h2><span class="sec-num">08</span> Explicit Out-of-Scope Limitations</h2>
+        <p>
+          As declared programmatically in <code>backend/constants.py</code> (<code>OUT_OF_SCOPE</code>), the following five physical phenomena are intentionally excluded from this 1-DOF vertical heave model:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 28%;">Omitted Phenomenon</th>
+              <th style="width: 72%;">Technical Scope Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Rolling</strong></td>
+              <td>Rotation about the longitudinal x-axis is constrained to zero; cargo weight is assumed symmetric across the vessel centerline.</td>
+            </tr>
+            <tr>
+              <td><strong>Pitching</strong></td>
+              <td>Rotation about the transverse y-axis (longitudinal trim) is omitted; draft is uniform along hull length L.</td>
+            </tr>
+            <tr>
+              <td><strong>Transverse Stability (Metacentric Height GM)</strong></td>
+              <td>Center-of-gravity elevation from deck stacking, righting-arm curves (GZ), ballast free-surface effects, and capsizing stability limits are not modeled.</td>
+            </tr>
+            <tr>
+              <td><strong>Surface Waves</strong></td>
+              <td>Water surface remains a flat calm plane at d = 0 m with zero incident wave forcing, radiation damping, or deck green-water shipping.</td>
+            </tr>
+            <tr>
+              <td><strong>Hydrodynamic Added Mass</strong></td>
+              <td>Surrounding fluid inertia m_a during vertical acceleration is omitted so the natural period remains the closed-form baseline T = 2*pi*sqrt(M / (rho*g*L*B)).</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECTION 9 -->
+      <section class="avoid-split">
+        <h2><span class="sec-num">09</span> Automated Validation Proof Table</h2>
+        <p>
+          Populated verbatim from the verified <code>run_self_tests()</code> JSON output executed against the live Python backend (total runtime: <code>0.3151 s</code>; complementary <code>pytest</code> suite: <code>15 passed in 1.66 s</code>). Baseline configuration: default <code>60 x 12 x 4 m</code> hull (<code>400 t</code>) plus <code>90 x 20 t</code> containers (<code>M = 2,200,000 kg</code>) in nominal seawater (<code>1025 kg/m^3</code>).
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 4%;">#</th>
+              <th style="width: 19%;">Proof Name &amp; Equation</th>
+              <th style="width: 22%;">Analytical / Expected</th>
+              <th style="width: 31%;">Simulated / Measured</th>
+              <th style="width: 14%;">Tolerance</th>
+              <th style="width: 10%;">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">1</td>
+              <td><strong>Equilibrium Draft (Seawater, 90 Cnt)</strong><br /><span class="num">d_eq = M / (rho*L*B)</span></td>
+              <td class="mono">2.9810 m<br />(2.981030 m)</td>
+              <td class="mono">analytical 2.9810 m;<br />simulated 2.9865 m (2.986488 m, 900 s settle, C_d=1.05, err 0.00546 m)</td>
+              <td class="mono">+/- 0.01 m</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="mono">2</td>
+              <td><strong>Free Heave Oscillation Period</strong><br /><span class="num">T = 2*pi*sqrt(M/(rho*g*L*B))</span></td>
+              <td class="mono">3.4642 s<br />(3.464198 s)</td>
+              <td class="mono">3.4642 s (3.464198 s)<br />d_eq + 0.25 m, C_d=0.05, 20 s, 6 upward crossings, err 0.00000 s</td>
+              <td class="mono">+/- 0.03 s</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="mono">3</td>
+              <td><strong>Fresh vs Seawater Draft Ratio</strong><br /><span class="num">d_fresh / d_sea = rho_sea / rho_fresh</span></td>
+              <td class="mono">1.0250<br />(1.025000)</td>
+              <td class="mono">1.025000<br />d_fresh = 3.0556 m, d_sea = 2.9810 m (+2.50%)</td>
+              <td class="mono">+/- 0.0001</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="mono">4</td>
+              <td><strong>Gravity Scaling: Earth to Moon</strong><br /><span class="num">d_eq inv.; T_m/T_e = sqrt(g_e/g_m)</span></td>
+              <td class="mono">draft diff &lt; 1e-9 m;<br />T_moon = 8.5233 s<br />(ratio 2.4604)</td>
+              <td class="mono">draft diff = 0.00e+00 m;<br />T_moon = 8.5233 s (8.523257 s, 6 crossings / 50 s, ratio 2.4604)</td>
+              <td class="mono">&lt; 1e-9 m;<br />+/- 0.05 s;<br />ratio +/- 0.02</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+            <tr>
+              <td class="mono">5</td>
+              <td><strong>Sinking Threshold (M_max + 1000 kg)</strong><br /><span class="num">M &gt; rho*L*B*H =&gt; d -&gt; d_tank</span></td>
+              <td class="mono">status = sunk;<br />d = 12.00 m (&gt; H = 4.00 m)</td>
+              <td class="mono">status = sunk; d = 12.00 m (v = 0.00 m/s; M = 2,953,000 vs M_max = 2,952,000 kg, 120 s RK4)</td>
+              <td class="mono">+/- 1e-6 m</td>
+              <td><span class="pass-tag">PASS</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <div class="callout-title">Complementary Pytest Unit &amp; FastAPI Integration Verification</div>
+          <p style="margin: 0;">
+            Running <code>backend\.venv\Scripts\python.exe -m pytest backend\tests\test_physics.py -v</code> completed with <strong>15 passed in 1.66 s</strong> (100% pass rate), covering all five proofs above alongside ceiling/floor boundary clamps, submerged volume clamping, submarine neutral buoyancy transitions, structured <code>validate_params_dict</code> error handling, and all five FastAPI endpoints (<code>/api/health</code>, <code>/api/constants</code>, <code>/api/validate</code>, <code>/api/simulate</code>, <code>/api/self-test</code>).
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 10: APPENDIX -->
+      <section class="page-break-before">
+        <h2><span class="sec-num">10</span> Appendix: Commented Core Physics Source Code (Verbatim)</h2>
+        <p>
+          The listings below embed the exact, unmodified Python modules from <code>backend/</code> so every cited constant, equation, numerical RK4 step, and self-test assertion can be audited directly alongside the technical specification.
+        </p>
+
+                <div class="code-file-header">
+          <span>10.1 backend/constants.py</span>
+          <span class="file-meta">180 lines | verbatim</span>
+        </div>
+        <pre class="source-code"><code>"""Physical constants, assumed design defaults, bounds, and scope limits.
+
+Every physical constant in this module includes an explicit bibliographic
+source citation. Vessel geometry and cargo mass defaults are clearly
+separated and labeled as ASSUMED DESIGN DEFAULTS for a teaching box-hull
+barge, not measurements of any real ship.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+# ---------------------------------------------------------------------------
+# CITED PHYSICAL CONSTANTS (with bibliographic references)
+# ---------------------------------------------------------------------------
+
+# Gravitational acceleration presets in m/s^2:
+# - earth: 9.80665 m/s^2 (exact standard gravity; BIPM / NIST SP 330, 9th SI Brochure)
+# - moon: 1.62 m/s^2 (NASA Goddard Space Flight Center Moon Fact Sheet)
+# - mars: 3.71 m/s^2 (NASA Goddard Space Flight Center Mars Fact Sheet)
+GRAVITY_PRESETS: dict[str, float] = {
+    "earth": 9.80665,
+    "moon": 1.62,
+    "mars": 3.71,
+}
+
+GRAVITY_METADATA: dict[str, dict[str, Any]] = {
+    "earth": {
+        "label": "Earth (Standard Gravity)",
+        "value": 9.80665,
+        "unit": "m/s^2",
+        "source": "BIPM / NIST SP 330, 9th SI Brochure (exact defined standard gravity)",
+    },
+    "moon": {
+        "label": "Moon",
+        "value": 1.62,
+        "unit": "m/s^2",
+        "source": "NASA Goddard Space Flight Center Moon Fact Sheet",
+    },
+    "mars": {
+        "label": "Mars",
+        "value": 3.71,
+        "unit": "m/s^2",
+        "source": "NASA Goddard Space Flight Center Mars Fact Sheet",
+    },
+}
+
+# Fluid mass density presets in kg/m^3:
+# - fresh: 1000.0 kg/m^3 (Pure water at 4 C reference; White, Fluid Mechanics)
+# - seawater: 1025.0 kg/m^3 (Standard naval architecture / Archimedes seawater reference; ITTC 2011 nominal)
+# - brine: 1200.0 kg/m^3 (Saturated NaCl brine at 20 C, ~26% w/w; CRC Handbook of Chemistry and Physics)
+FLUID_PRESETS: dict[str, float] = {
+    "fresh": 1000.0,
+    "seawater": 1025.0,
+    "brine": 1200.0,
+}
+
+FLUID_METADATA: dict[str, dict[str, Any]] = {
+    "fresh": {
+        "label": "Fresh Water (4 C)",
+        "value": 1000.0,
+        "unit": "kg/m^3",
+        "source": "Pure water at 4 C reference; Frank M. White, Fluid Mechanics",
+    },
+    "seawater": {
+        "label": "Seawater (ITTC Nominal)",
+        "value": 1025.0,
+        "unit": "kg/m^3",
+        "source": "Standard naval architecture / Archimedes seawater reference; ITTC 2011 nominal",
+    },
+    "brine": {
+        "label": "Saturated Brine (20 C)",
+        "value": 1200.0,
+        "unit": "kg/m^3",
+        "source": "Saturated NaCl brine at 20 C (~26% w/w); CRC Handbook of Chemistry and Physics",
+    },
+}
+
+# Hydrodynamic heave drag coefficient (dimensionless):
+# Flat rectangular prism / box-hull normal to heave flow.
+# Source: Sighard F. Hoerner, Fluid-Dynamic Drag; Frank M. White, Fluid Mechanics.
+DRAG_COEFF_DEFAULT: float = 1.05
+
+# Small-drag test coefficient (dimensionless) used in validation self-tests
+# to isolate the undamped natural heave oscillation period T = 2*pi*sqrt(M / (rho*g*L*B)).
+DRAG_COEFF_SMALL_TEST: float = 0.05
+
+DRAG_METADATA: dict[str, dict[str, Any]] = {
+    "default": {
+        "label": "Box-Hull Heave Drag Coefficient",
+        "value": DRAG_COEFF_DEFAULT,
+        "unit": "dimensionless",
+        "source": "Flat rectangular prism / box-hull normal to heave flow; Hoerner, Fluid-Dynamic Drag; White, Fluid Mechanics",
+    },
+    "small_test": {
+        "label": "Small-Drag Validation Coefficient",
+        "value": DRAG_COEFF_SMALL_TEST,
+        "unit": "dimensionless",
+        "source": "Small-drag test value used in validation to isolate undamped heave period",
+    },
+}
+
+# ---------------------------------------------------------------------------
+# ASSUMED DESIGN DEFAULTS (teaching model parameters, NOT real-ship facts)
+# ---------------------------------------------------------------------------
+
+ASSUMED_DEFAULTS: dict[str, Any] = {
+    "length_m": 60.0,
+    "beam_m": 12.0,
+    "height_m": 4.0,
+    "hull_mass_t": 400.0,
+    "container_mass_t": 20.0,
+    "containers": 0,
+    "ballast_fraction": 0.0,
+    "mode": "lab",
+    "fluid_density": FLUID_PRESETS["seawater"],
+    "gravity": GRAVITY_PRESETS["earth"],
+    "drag_coeff": DRAG_COEFF_DEFAULT,
+    "load_line_ratio": 0.75,  # 3.00 m load line at default H = 4.0 m
+}
+
+# Fixed RK4 integration step in seconds (120 Hz).
+DEFAULT_DT_S: float = 1.0 / 120.0
+
+# Valid operating modes for the simulation.
+VALID_MODES: tuple[str, ...] = ("lab", "challenge", "submarine")
+
+# Parameter validation bounds (inclusive).
+PARAM_BOUNDS: dict[str, dict[str, Any]] = {
+    "length_m": {"min": 20.0, "max": 120.0, "unit": "m", "integer": False},
+    "beam_m": {"min": 4.0, "max": 30.0, "unit": "m", "integer": False},
+    "height_m": {"min": 2.0, "max": 10.0, "unit": "m", "integer": False},
+    "hull_mass_t": {"min": 100.0, "max": 1500.0, "unit": "t", "integer": False},
+    "container_mass_t": {"min": 1.0, "max": 100.0, "unit": "t", "integer": False},
+    "containers": {"min": 0, "max": 250, "unit": "count", "integer": True},
+    "ballast_fraction": {"min": 0.0, "max": 1.0, "unit": "fraction", "integer": False},
+    "fluid_density": {"min": 500.0, "max": 2000.0, "unit": "kg/m^3", "integer": False},
+    "gravity": {"min": 0.1, "max": 30.0, "unit": "m/s^2", "integer": False},
+    "drag_coeff": {"min": 0.0, "max": 5.0, "unit": "dimensionless", "integer": False},
+    "load_line_ratio": {"min": 0.1, "max": 0.95, "unit": "ratio", "integer": False},
+}
+
+# Explicitly declared physics effects omitted from this 1-DOF vertical heave model.
+OUT_OF_SCOPE: list[str] = [
+    "rolling",
+    "pitching",
+    "transverse stability (metacentric height GM)",
+    "surface waves",
+    "hydrodynamic added mass",
+]
+
+
+def tank_depth_m(height_m: float) -&gt; float:
+    """Return the vertical test-tank seabed depth in meters.
+
+    Defined as max(12.0, 3.0 * height_m) so the hull always has at least two
+    hull heights of water column below its deck when fully submerged.
+    """
+    return max(12.0, 3.0 * height_m)
+
+
+def get_constants_payload() -&gt; dict[str, Any]:
+    """Return a JSON-serializable snapshot of all constants, defaults, and limits."""
+    return {
+        "gravity_presets": GRAVITY_METADATA,
+        "fluid_presets": FLUID_METADATA,
+        "drag_coefficients": DRAG_METADATA,
+        "assumed_defaults": {
+            **ASSUMED_DEFAULTS,
+            "default_tank_depth_m": tank_depth_m(float(ASSUMED_DEFAULTS["height_m"])),
+            "default_dt_s": DEFAULT_DT_S,
+            "note": (
+                "ASSUMED DESIGN DEFAULTS for a simplified rectangular box-hull "
+                "teaching model, not specifications of a real commercial vessel."
+            ),
+        },
+        "bounds": PARAM_BOUNDS,
+        "valid_modes": list(VALID_MODES),
+        "out_of_scope": OUT_OF_SCOPE,
+    }
+</code></pre>
+
+        <div class="code-file-header">
+          <span>10.2 backend/physics.py</span>
+          <span class="file-meta">531 lines | verbatim</span>
+        </div>
+        <pre class="source-code"><code>"""Authoritative 1-DOF vertical heave and Archimedes buoyancy physics engine.
+
+Design principles:
+- Pure functions with zero I/O, zero side effects, and zero drawing logic.
+- Coordinate convention: draft d &gt;= 0 is measured vertically DOWNWARD from the
+  calm water surface (waterline at d = 0 m) to the bottom keel of the box hull.
+  Downward velocity v = dd/dt is positive; upward velocity is negative.
+- Governing 1-DOF equation of motion for a rectangular box hull (L x B x H):
+      M * (d^2 d / dt^2) = W - F_b(d) - F_drag(v)
+  where:
+      W      = M * g                                (downward weight, N)
+      F_b(d) = rho * g * L * B * clamp(d, 0, H)     (upward buoyancy, N)
+      F_drag = 0.5 * rho * C_d * (L * B) * v * |v|  (quadratic heave drag, N)
+- Time integration uses classical 4th-order Runge-Kutta (RK4) with fixed step
+  dt = 1/120 s by default and hard floor/ceiling clamping at [0, tank_depth_m].
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass
+import math
+from typing import Any, Mapping, Optional
+
+from backend.constants import (
+    ASSUMED_DEFAULTS,
+    DEFAULT_DT_S,
+    DRAG_COEFF_DEFAULT,
+    FLUID_PRESETS,
+    GRAVITY_PRESETS,
+    PARAM_BOUNDS,
+    VALID_MODES,
+    tank_depth_m,
+)
+
+
+@dataclass(frozen=True)
+class ShipParams:
+    """Immutable vessel, cargo, ballast, and environment parameters."""
+
+    length_m: float = float(ASSUMED_DEFAULTS["length_m"])
+    beam_m: float = float(ASSUMED_DEFAULTS["beam_m"])
+    height_m: float = float(ASSUMED_DEFAULTS["height_m"])
+    hull_mass_t: float = float(ASSUMED_DEFAULTS["hull_mass_t"])
+    container_mass_t: float = float(ASSUMED_DEFAULTS["container_mass_t"])
+    containers: int = int(ASSUMED_DEFAULTS["containers"])
+    ballast_fraction: float = float(ASSUMED_DEFAULTS["ballast_fraction"])
+    mode: str = str(ASSUMED_DEFAULTS["mode"])
+    fluid_density: float = float(FLUID_PRESETS["seawater"])
+    gravity: float = float(GRAVITY_PRESETS["earth"])
+    drag_coeff: float = DRAG_COEFF_DEFAULT
+    load_line_ratio: float = float(ASSUMED_DEFAULTS["load_line_ratio"])
+
+    def to_dict(self) -&gt; dict[str, Any]:
+        """Serialize parameters to a plain dictionary."""
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class SimState:
+    """Instantaneous 1-DOF heave state at simulation time time_s."""
+
+    draft_m: float
+    velocity_mps: float = 0.0
+    time_s: float = 0.0
+
+    def to_dict(self) -&gt; dict[str, float]:
+        """Serialize state to a plain dictionary."""
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class ForceBreakdown:
+    """Forces and downward acceleration acting on the vessel at (draft, velocity)."""
+
+    submerged_volume_m3: float
+    buoyancy_n: float
+    weight_n: float
+    drag_n: float
+    static_net_up_n: float
+    accel_down_mps2: float
+
+    def to_dict(self) -&gt; dict[str, float]:
+        """Serialize force breakdown to a plain dictionary."""
+        return asdict(self)
+
+
+def clamp(value: float, low: float, high: float) -&gt; float:
+    """Clamp value into the closed interval [low, high]."""
+    if value &lt; low:
+        return low
+    if value &gt; high:
+        return high
+    return value
+
+
+def total_mass_kg(params: ShipParams) -&gt; float:
+    """Return total vessel mass M in kilograms.
+
+    - In submarine mode, internal ballast tanks hold a fraction of the hull
+      internal volume filled with ambient fluid:
+          M = m_hull_kg + ballast_fraction * rho * (L * B * H)
+    - In lab and challenge modes, mass is empty steel hull plus deck cargo:
+          M = m_hull_kg + containers * container_mass_kg
+    """
+    hull_mass_kg = params.hull_mass_t * 1000.0
+    if params.mode == "submarine":
+        hull_volume_m3 = params.length_m * params.beam_m * params.height_m
+        ballast_mass_kg = params.ballast_fraction * params.fluid_density * hull_volume_m3
+        return hull_mass_kg + ballast_mass_kg
+    container_mass_kg = params.container_mass_t * 1000.0
+    return hull_mass_kg + params.containers * container_mass_kg
+
+
+def max_displacement_kg(
+    length_m: float,
+    beam_m: float,
+    height_m: float,
+    fluid_density: float,
+) -&gt; float:
+    """Return maximum displaced fluid mass M_max = rho * L * B * H in kg.
+
+    When total mass M exceeds M_max, even complete submergence (draft &gt;= H)
+    cannot generate enough upward buoyancy to balance weight.
+    """
+    return fluid_density * length_m * beam_m * height_m
+
+
+def submerged_volume_m3(
+    length_m: float,
+    beam_m: float,
+    height_m: float,
+    draft_m: float,
+) -&gt; float:
+    """Return displaced fluid volume V_sub = L * B * clamp(draft, 0, H) in m^3.
+
+    Clamping at 0 represents the hull lifted completely above the water surface;
+    clamping at H represents full submergence of the enclosed rectangular hull.
+    """
+    effective_draft = min(max(draft_m, 0.0), height_m)
+    return length_m * beam_m * effective_draft
+
+
+def compute_forces(
+    draft_m: float,
+    velocity_mps: float,
+    params: ShipParams,
+) -&gt; ForceBreakdown:
+    """Compute upward buoyancy, downward weight, quadratic drag, and acceleration.
+
+    Sign conventions:
+    - buoyancy_n (F_b) is positive upward: F_b = rho * g * V_sub
+    - weight_n (W) is positive downward: W = M * g
+    - drag_n (F_drag) opposes downward velocity v:
+          F_drag = 0.5 * rho * C_d * (L * B) * v * |v|
+    - accel_down_mps2 = (W - F_b - F_drag) / M  (positive downward)
+    - static_net_up_n = F_b - W                 (positive upward)
+    """
+    waterplane_area = params.length_m * params.beam_m
+    v_sub = submerged_volume_m3(
+        params.length_m,
+        params.beam_m,
+        params.height_m,
+        draft_m,
+    )
+    f_buoyancy = params.fluid_density * params.gravity * v_sub
+    mass_kg = total_mass_kg(params)
+    weight = mass_kg * params.gravity
+    f_drag = (
+        0.5
+        * params.fluid_density
+        * params.drag_coeff
+        * waterplane_area
+        * velocity_mps
+        * abs(velocity_mps)
+    )
+    accel_down = (weight - f_buoyancy - f_drag) / mass_kg
+    static_net_up = f_buoyancy - weight
+
+    return ForceBreakdown(
+        submerged_volume_m3=v_sub,
+        buoyancy_n=f_buoyancy,
+        weight_n=weight,
+        drag_n=f_drag,
+        static_net_up_n=static_net_up,
+        accel_down_mps2=accel_down,
+    )
+
+
+def equilibrium_draft_m(params: ShipParams) -&gt; float:
+    """Return static Archimedes equilibrium draft d_eq = M / (rho * L * B) in m.
+
+    Note that gravity g cancels identically between W = M * g and
+    F_b = rho * g * L * B * d_eq. If d_eq &gt; height_m, no floating equilibrium
+    exists and the vessel sinks.
+    """
+    mass_kg = total_mass_kg(params)
+    return mass_kg / (params.fluid_density * params.length_m * params.beam_m)
+
+
+def analytical_heave_period_s(params: ShipParams) -&gt; float:
+    """Return undamped linear heave period T = 2*pi*sqrt(M / (rho*g*L*B)) in s.
+
+    Derived from the restoring stiffness k = rho * g * L * B for small vertical
+    displacements around d_eq when 0 &lt; d &lt; H (without hydrodynamic added mass).
+    """
+    mass_kg = total_mass_kg(params)
+    stiffness = params.fluid_density * params.gravity * params.length_m * params.beam_m
+    return 2.0 * math.pi * math.sqrt(mass_kg / stiffness)
+
+
+def neutral_ballast_fraction(params: ShipParams) -&gt; float:
+    """Return ballast tank fill fraction in [0, 1] giving F_b == W when submerged.
+
+    Setting M = m_hull_kg + f * M_max = M_max yields:
+        f_neutral = clamp(1.0 - m_hull_kg / (rho * L * B * H), 0.0, 1.0)
+    """
+    hull_mass_kg = params.hull_mass_t * 1000.0
+    m_max = max_displacement_kg(
+        params.length_m,
+        params.beam_m,
+        params.height_m,
+        params.fluid_density,
+    )
+    return clamp(1.0 - hull_mass_kg / m_max, 0.0, 1.0)
+
+
+def classify_status(draft_m: float, params: ShipParams) -&gt; str:
+    """Classify instantaneous vessel state for barge/challenge or submarine mode.
+
+    Barge / Challenge rules:
+    - "sunk"       if M &gt; M_max and draft &gt;= H
+    - "overloaded" if M &gt; M_max or d_eq &gt; load_line_ratio * H
+    - "floating"   otherwise
+
+    Submarine rules:
+    - "neutral"    if |M - M_max| / M_max &lt; 0.005 and draft &gt;= H
+    - "surfaced"   if draft &lt; H and M &lt; M_max
+    - "sunk"       if draft &gt;= tank_depth_m - 0.01 and M &gt; M_max
+    - "submerged"  otherwise
+    """
+    mass_kg = total_mass_kg(params)
+    m_max = max_displacement_kg(
+        params.length_m,
+        params.beam_m,
+        params.height_m,
+        params.fluid_density,
+    )
+
+    if params.mode == "submarine":
+        seabed_m = tank_depth_m(params.height_m)
+        if abs(mass_kg - m_max) / m_max &lt; 0.005 and draft_m &gt;= params.height_m:
+            return "neutral"
+        if draft_m &lt; params.height_m and mass_kg &lt; m_max:
+            return "surfaced"
+        if draft_m &gt;= seabed_m - 0.01 and mass_kg &gt; m_max:
+            return "sunk"
+        return "submerged"
+
+    d_eq = equilibrium_draft_m(params)
+    if mass_kg &gt; m_max and draft_m &gt;= params.height_m:
+        return "sunk"
+    if mass_kg &gt; m_max or d_eq &gt; params.load_line_ratio * params.height_m:
+        return "overloaded"
+    return "floating"
+
+
+def rk4_step(
+    state: SimState,
+    dt: float = DEFAULT_DT_S,
+    params: Optional[ShipParams] = None,
+) -&gt; SimState:
+    """Advance the 1-DOF vertical heave state by one RK4 time step dt.
+
+    Draft is clamped to [0.0, tank_depth_m(params.height_m)] with zero velocity
+    on ceiling (d = 0) or seabed floor (d = tank_depth_m) contact.
+    """
+    active_params = params if params is not None else ShipParams()
+
+    # Precompute constant coefficients across the four RK4 sub-stages.
+    height_m = active_params.height_m
+    waterplane_area = active_params.length_m * active_params.beam_m
+    mass_kg = total_mass_kg(active_params)
+    weight = mass_kg * active_params.gravity
+    buoy_per_meter = active_params.fluid_density * active_params.gravity * waterplane_area
+    drag_factor = 0.5 * active_params.fluid_density * active_params.drag_coeff * waterplane_area
+    inv_mass = 1.0 / mass_kg
+
+    def accel_down(draft: float, vel: float) -&gt; float:
+        eff_draft = 0.0 if draft &lt; 0.0 else (height_m if draft &gt; height_m else draft)
+        f_buoy = buoy_per_meter * eff_draft
+        f_drag = drag_factor * vel * abs(vel)
+        return (weight - f_buoy - f_drag) * inv_mass
+
+    d0 = state.draft_m
+    v0 = state.velocity_mps
+
+    k1_d = v0
+    k1_v = accel_down(d0, v0)
+
+    d1 = d0 + 0.5 * dt * k1_d
+    v1 = v0 + 0.5 * dt * k1_v
+    k2_d = v1
+    k2_v = accel_down(d1, v1)
+
+    d2 = d0 + 0.5 * dt * k2_d
+    v2 = v0 + 0.5 * dt * k2_v
+    k3_d = v2
+    k3_v = accel_down(d2, v2)
+
+    d3 = d0 + dt * k3_d
+    v3 = v0 + dt * k3_v
+    k4_d = v3
+    k4_v = accel_down(d3, v3)
+
+    next_d = d0 + (dt / 6.0) * (k1_d + 2.0 * k2_d + 2.0 * k3_d + k4_d)
+    next_v = v0 + (dt / 6.0) * (k1_v + 2.0 * k2_v + 2.0 * k3_v + k4_v)
+
+    seabed_m = tank_depth_m(height_m)
+    if next_d &lt;= 0.0:
+        next_d = 0.0
+        next_v = 0.0
+    elif next_d &gt;= seabed_m:
+        next_d = seabed_m
+        next_v = 0.0
+
+    return SimState(
+        draft_m=next_d,
+        velocity_mps=next_v,
+        time_s=state.time_s + dt,
+    )
+
+
+def _build_frame(state: SimState, params: ShipParams) -&gt; dict[str, Any]:
+    """Build a JSON-ready telemetry frame dictionary for a given simulation state."""
+    forces = compute_forces(state.draft_m, state.velocity_mps, params)
+    return {
+        "time_s": state.time_s,
+        "draft_m": state.draft_m,
+        "velocity_mps": state.velocity_mps,
+        "submerged_volume_m3": forces.submerged_volume_m3,
+        "buoyancy_n": forces.buoyancy_n,
+        "weight_n": forces.weight_n,
+        "drag_n": forces.drag_n,
+        "static_net_up_n": forces.static_net_up_n,
+        "accel_down_mps2": forces.accel_down_mps2,
+        "freeboard_m": params.height_m - state.draft_m,
+        "status": classify_status(state.draft_m, params),
+    }
+
+
+def simulate_trajectory(
+    initial_state: SimState,
+    params: ShipParams,
+    duration_s: float,
+    dt: float = DEFAULT_DT_S,
+    sample_every: int = 4,
+) -&gt; list[dict[str, Any]]:
+    """Integrate a trajectory for duration_s seconds and return sampled frames.
+
+    Always includes the initial frame (step 0), every sample_every-th step, and
+    the final step if total_steps is not an exact multiple of sample_every.
+    """
+    if duration_s &lt; 0.0 or not math.isfinite(duration_s):
+        raise ValueError("duration_s must be finite and non-negative")
+    if dt &lt;= 0.0 or not math.isfinite(dt):
+        raise ValueError("dt must be finite and positive")
+    if sample_every &lt; 1:
+        raise ValueError("sample_every must be an integer &gt;= 1")
+
+    seabed_m = tank_depth_m(params.height_m)
+    clamped_draft = clamp(initial_state.draft_m, 0.0, seabed_m)
+    state = SimState(
+        draft_m=clamped_draft,
+        velocity_mps=initial_state.velocity_mps,
+        time_s=initial_state.time_s,
+    )
+
+    total_steps = int(round(duration_s / dt))
+    frames: list[dict[str, Any]] = [_build_frame(state, params)]
+
+    for step in range(1, total_steps + 1):
+        state = rk4_step(state, dt, params)
+        if step % sample_every == 0 or step == total_steps:
+            frames.append(_build_frame(state, params))
+
+    return frames
+
+
+def compute_summary_metrics(
+    params: ShipParams,
+    draft_m: Optional[float] = None,
+) -&gt; dict[str, Any]:
+    """Compute analytical static and heave metrics for a valid ShipParams instance."""
+    mass_kg = total_mass_kg(params)
+    m_max = max_displacement_kg(
+        params.length_m,
+        params.beam_m,
+        params.height_m,
+        params.fluid_density,
+    )
+    d_eq = equilibrium_draft_m(params)
+    seabed_m = tank_depth_m(params.height_m)
+    eval_draft = clamp(draft_m, 0.0, seabed_m) if draft_m is not None else min(d_eq, seabed_m)
+    forces = compute_forces(eval_draft, 0.0, params)
+    load_line_draft = params.load_line_ratio * params.height_m
+
+    return {
+        "total_mass_kg": mass_kg,
+        "total_mass_t": mass_kg / 1000.0,
+        "max_displacement_kg": m_max,
+        "max_displacement_t": m_max / 1000.0,
+        "equilibrium_draft_m": d_eq,
+        "freeboard_at_eq_m": params.height_m - d_eq,
+        "load_line_draft_m": load_line_draft,
+        "tank_depth_m": seabed_m,
+        "analytical_heave_period_s": analytical_heave_period_s(params),
+        "neutral_ballast_fraction": neutral_ballast_fraction(params),
+        "weight_n": forces.weight_n,
+        "max_buoyancy_n": m_max * params.gravity,
+        "buoyancy_at_eval_n": forces.buoyancy_n,
+        "static_net_up_at_eval_n": forces.static_net_up_n,
+        "status": classify_status(eval_draft, params),
+        "params": params.to_dict(),
+    }
+
+
+def validate_params_dict(data: Any) -&gt; list[dict[str, str]]:
+    """Validate a raw parameter mapping and return structured field errors.
+
+    Returns an empty list when valid, or a list of {"field": str, "message": str}
+    entries for non-mapping payloads, non-finite numbers, negative values,
+    type mismatches, invalid modes, or out-of-bounds parameters.
+    """
+    if not isinstance(data, Mapping):
+        return [{"field": "body", "message": "Request payload must be a JSON object."}]
+
+    errors: list[dict[str, str]] = []
+
+    # Validate mode if provided.
+    mode_val = data.get("mode", ASSUMED_DEFAULTS["mode"])
+    if not isinstance(mode_val, str) or mode_val not in VALID_MODES:
+        allowed = ", ".join(VALID_MODES)
+        errors.append(
+            {
+                "field": "mode",
+                "message": f"Mode must be one of: {allowed}.",
+            }
+        )
+
+    # Validate all numeric parameters (using defaults for omitted keys).
+    for field_name, spec in PARAM_BOUNDS.items():
+        if field_name not in data:
+            continue
+        raw_val = data[field_name]
+        min_v = spec["min"]
+        max_v = spec["max"]
+        unit = spec["unit"]
+        must_be_int = bool(spec["integer"])
+
+        if raw_val is None or isinstance(raw_val, bool) or not isinstance(raw_val, (int, float)):
+            errors.append(
+                {
+                    "field": field_name,
+                    "message": f"{field_name} must be a finite number between {min_v} and {max_v} ({unit}).",
+                }
+            )
+            continue
+
+        numeric_val = float(raw_val)
+        if not math.isfinite(numeric_val):
+            errors.append(
+                {
+                    "field": field_name,
+                    "message": f"{field_name} must be a finite number (NaN and Infinity are not allowed).",
+                }
+            )
+            continue
+
+        if numeric_val &lt; 0.0:
+            errors.append(
+                {
+                    "field": field_name,
+                    "message": f"{field_name} cannot be negative (valid range: {min_v} to {max_v} {unit}).",
+                }
+            )
+            continue
+
+        if must_be_int and not numeric_val.is_integer():
+            errors.append(
+                {
+                    "field": field_name,
+                    "message": f"{field_name} must be a whole integer between {min_v} and {max_v}.",
+                }
+            )
+            continue
+
+        if numeric_val &lt; min_v or numeric_val &gt; max_v:
+            errors.append(
+                {
+                    "field": field_name,
+                    "message": f"{field_name} must be between {min_v} and {max_v} ({unit}); received {raw_val}.",
+                }
+            )
+
+    return errors
+
+
+def params_from_dict(data: Mapping[str, Any]) -&gt; ShipParams:
+    """Construct a ShipParams instance from a pre-validated mapping.
+
+    Raises ValueError if validation fails.
+    """
+    errors = validate_params_dict(data)
+    if errors:
+        joined = "; ".join(f"{e['field']}: {e['message']}" for e in errors)
+        raise ValueError(f"Invalid ShipParams: {joined}")
+
+    return ShipParams(
+        length_m=float(data.get("length_m", ASSUMED_DEFAULTS["length_m"])),
+        beam_m=float(data.get("beam_m", ASSUMED_DEFAULTS["beam_m"])),
+        height_m=float(data.get("height_m", ASSUMED_DEFAULTS["height_m"])),
+        hull_mass_t=float(data.get("hull_mass_t", ASSUMED_DEFAULTS["hull_mass_t"])),
+        container_mass_t=float(data.get("container_mass_t", ASSUMED_DEFAULTS["container_mass_t"])),
+        containers=int(round(float(data.get("containers", ASSUMED_DEFAULTS["containers"])))),
+        ballast_fraction=float(data.get("ballast_fraction", ASSUMED_DEFAULTS["ballast_fraction"])),
+        mode=str(data.get("mode", ASSUMED_DEFAULTS["mode"])),
+        fluid_density=float(data.get("fluid_density", ASSUMED_DEFAULTS["fluid_density"])),
+        gravity=float(data.get("gravity", ASSUMED_DEFAULTS["gravity"])),
+        drag_coeff=float(data.get("drag_coeff", ASSUMED_DEFAULTS["drag_coeff"])),
+        load_line_ratio=float(data.get("load_line_ratio", ASSUMED_DEFAULTS["load_line_ratio"])),
+    )
+</code></pre>
+
+        <div class="code-file-header">
+          <span>10.3 backend/validation.py</span>
+          <span class="file-meta">331 lines | verbatim</span>
+        </div>
+        <pre class="source-code"><code>"""Automated physics accuracy self-test suite for Cargo Draft Lab.
+
+Executes the five canonical physical verification proofs against the RK4
+integrator and analytical Archimedes / heave equations:
+  1. Equilibrium draft (analytical and simulated settled draft)
+  2. Simulated free heave oscillation period vs analytical period
+  3. Fresh water vs seawater draft ratio (1025 / 1000 = 1.0250)
+  4. Gravity scaling from Earth to Moon (draft invariance, period scaling)
+  5. Sinking threshold just above maximum hull displacement
+"""
+
+from __future__ import annotations
+
+import math
+from typing import Any
+
+from backend.constants import (
+    DEFAULT_DT_S,
+    DRAG_COEFF_DEFAULT,
+    DRAG_COEFF_SMALL_TEST,
+    FLUID_PRESETS,
+    GRAVITY_PRESETS,
+    tank_depth_m,
+)
+from backend.physics import (
+    ShipParams,
+    SimState,
+    analytical_heave_period_s,
+    classify_status,
+    equilibrium_draft_m,
+    max_displacement_kg,
+    rk4_step,
+    total_mass_kg,
+)
+
+
+def measure_heave_period_s(
+    params: ShipParams,
+    initial_offset_m: float = 0.25,
+    duration_s: float = 20.0,
+    dt: float = DEFAULT_DT_S,
+) -&gt; tuple[float, int]:
+    """Measure heave period from upward zero-crossings of (draft - d_eq).
+
+    Uses linear interpolation between adjacent RK4 steps to locate each
+    crossing with sub-step accuracy. Returns (mean_period_s, crossing_count).
+    """
+    d_eq = equilibrium_draft_m(params)
+    state = SimState(draft_m=d_eq + initial_offset_m, velocity_mps=0.0, time_s=0.0)
+    prev_y = state.draft_m - d_eq
+    prev_t = state.time_s
+
+    crossings: list[float] = []
+    total_steps = int(round(duration_s / dt))
+
+    for _ in range(total_steps):
+        state = rk4_step(state, dt, params)
+        curr_y = state.draft_m - d_eq
+        curr_t = state.time_s
+        if prev_y &lt; 0.0 and curr_y &gt;= 0.0:
+            frac = -prev_y / (curr_y - prev_y)
+            crossings.append(prev_t + frac * (curr_t - prev_t))
+        prev_y = curr_y
+        prev_t = curr_t
+
+    if len(crossings) &lt; 2:
+        raise RuntimeError(
+            f"Insufficient upward zero-crossings ({len(crossings)}) to measure period."
+        )
+
+    periods = [crossings[i + 1] - crossings[i] for i in range(len(crossings) - 1)]
+    mean_period = sum(periods) / len(periods)
+    return mean_period, len(crossings)
+
+
+def run_self_tests() -&gt; dict[str, Any]:
+    """Run all five physics verification proofs and return a structured report."""
+    tests: list[dict[str, Any]] = []
+
+    # Shared baseline: default box hull (60 x 12 x 4 m, 400 t hull) + 90 x 20 t
+    # containers (M = 2.2e6 kg) in nominal seawater (1025 kg/m^3) on Earth.
+    base_seawater = ShipParams(
+        containers=90,
+        fluid_density=FLUID_PRESETS["seawater"],
+        gravity=GRAVITY_PRESETS["earth"],
+        drag_coeff=DRAG_COEFF_DEFAULT,
+    )
+
+    # ------------------------------------------------------------------
+    # Proof 1: Equilibrium draft (analytical and simulated settled draft)
+    # ------------------------------------------------------------------
+    d_eq_ana = equilibrium_draft_m(base_seawater)
+    expected_d_eq = 2.981029810298103  # 2,200,000 / (1025 * 60 * 12)
+    tol_d_eq = 0.01
+
+    # Drop hull from waterline (d = 0 m) with realistic drag C_d = 1.05 and
+    # integrate until quadratic damping settles residual heave below 0.01 m.
+    settle_duration_s = 900.0
+    state = SimState(draft_m=0.0, velocity_mps=0.0, time_s=0.0)
+    settle_steps = int(round(settle_duration_s / DEFAULT_DT_S))
+    for _ in range(settle_steps):
+        state = rk4_step(state, DEFAULT_DT_S, base_seawater)
+    d_sim_settled = state.draft_m
+
+    test1_passed = (
+        abs(d_eq_ana - expected_d_eq) &lt;= tol_d_eq
+        and abs(d_sim_settled - expected_d_eq) &lt;= tol_d_eq
+        and abs(d_sim_settled - d_eq_ana) &lt;= tol_d_eq
+    )
+    tests.append(
+        {
+            "id": "equilibrium_draft",
+            "name": "Equilibrium Draft (Seawater, 90 Containers)",
+            "equation": "d_eq = M / (rho * L * B)",
+            "expected": f"{expected_d_eq:.4f} m (tol +/-{tol_d_eq:.2f} m)",
+            "measured": f"analytical {d_eq_ana:.4f} m; simulated {d_sim_settled:.4f} m",
+            "expected_value": round(expected_d_eq, 6),
+            "measured_value": round(d_sim_settled, 6),
+            "analytical_value": round(d_eq_ana, 6),
+            "unit": "m",
+            "tolerance": tol_d_eq,
+            "passed": test1_passed,
+            "detail": (
+                f"M = {total_mass_kg(base_seawater):,.0f} kg, rho = 1025 kg/m^3, "
+                f"L*B = 720 m^2. Released from d = 0.00 m with C_d = {DRAG_COEFF_DEFAULT} "
+                f"at dt = 1/120 s for {settle_duration_s:.0f} s; final error "
+                f"|d_sim - d_eq| = {abs(d_sim_settled - d_eq_ana):.5f} m."
+            ),
+        }
+    )
+
+    # ------------------------------------------------------------------
+    # Proof 2: Simulated heave oscillation period vs analytical period
+    # ------------------------------------------------------------------
+    small_drag_earth = ShipParams(
+        containers=90,
+        fluid_density=FLUID_PRESETS["seawater"],
+        gravity=GRAVITY_PRESETS["earth"],
+        drag_coeff=DRAG_COEFF_SMALL_TEST,
+    )
+    t_earth_ana = analytical_heave_period_s(small_drag_earth)
+    t_earth_sim, earth_crossings = measure_heave_period_s(
+        small_drag_earth,
+        initial_offset_m=0.25,
+        duration_s=20.0,
+        dt=DEFAULT_DT_S,
+    )
+    tol_period = 0.03
+    test2_passed = abs(t_earth_sim - t_earth_ana) &lt;= tol_period
+    tests.append(
+        {
+            "id": "heave_period",
+            "name": "Free Heave Oscillation Period (Small Drag)",
+            "equation": "T = 2 * pi * sqrt(M / (rho * g * L * B))",
+            "expected": f"{t_earth_ana:.4f} s (tol +/-{tol_period:.2f} s)",
+            "measured": f"{t_earth_sim:.4f} s",
+            "expected_value": round(t_earth_ana, 6),
+            "measured_value": round(t_earth_sim, 6),
+            "unit": "s",
+            "tolerance": tol_period,
+            "passed": test2_passed,
+            "detail": (
+                f"Initial draft d_eq + 0.25 m, C_d = {DRAG_COEFF_SMALL_TEST}, "
+                f"RK4 dt = 1/120 s for 20 s ({earth_crossings} upward zero-crossings). "
+                f"Error |T_sim - T_ana| = {abs(t_earth_sim - t_earth_ana):.5f} s."
+            ),
+        }
+    )
+
+    # ------------------------------------------------------------------
+    # Proof 3: Draft ratio in fresh water (1000) vs seawater (1025)
+    # ------------------------------------------------------------------
+    base_fresh = ShipParams(
+        containers=90,
+        fluid_density=FLUID_PRESETS["fresh"],
+        gravity=GRAVITY_PRESETS["earth"],
+        drag_coeff=DRAG_COEFF_DEFAULT,
+    )
+    d_fresh = equilibrium_draft_m(base_fresh)
+    d_sea = equilibrium_draft_m(base_seawater)
+    measured_ratio = d_fresh / d_sea
+    expected_ratio = FLUID_PRESETS["seawater"] / FLUID_PRESETS["fresh"]  # 1.0250
+    tol_ratio = 1e-4
+    test3_passed = abs(measured_ratio - expected_ratio) &lt;= tol_ratio
+    tests.append(
+        {
+            "id": "fresh_seawater_ratio",
+            "name": "Fresh Water vs Seawater Draft Ratio",
+            "equation": "d_fresh / d_seawater = rho_seawater / rho_fresh",
+            "expected": f"{expected_ratio:.4f} (tol +/-{tol_ratio:.4f})",
+            "measured": f"{measured_ratio:.6f}",
+            "expected_value": round(expected_ratio, 6),
+            "measured_value": round(measured_ratio, 6),
+            "unit": "ratio",
+            "tolerance": tol_ratio,
+            "passed": test3_passed,
+            "detail": (
+                f"d_fresh = {d_fresh:.4f} m (rho = 1000 kg/m^3), "
+                f"d_seawater = {d_sea:.4f} m (rho = 1025 kg/m^3). "
+                f"Draft increases by +2.50% entering fresh water."
+            ),
+        }
+    )
+
+    # ------------------------------------------------------------------
+    # Proof 4: Gravity Earth (9.80665) to Moon (1.62)
+    # ------------------------------------------------------------------
+    small_drag_moon = ShipParams(
+        containers=90,
+        fluid_density=FLUID_PRESETS["seawater"],
+        gravity=GRAVITY_PRESETS["moon"],
+        drag_coeff=DRAG_COEFF_SMALL_TEST,
+    )
+    d_eq_moon = equilibrium_draft_m(small_drag_moon)
+    draft_diff = abs(d_eq_ana - d_eq_moon)
+
+    t_moon_ana = analytical_heave_period_s(small_drag_moon)
+    t_moon_sim, moon_crossings = measure_heave_period_s(
+        small_drag_moon,
+        initial_offset_m=0.25,
+        duration_s=50.0,
+        dt=DEFAULT_DT_S,
+    )
+    expected_period_ratio = math.sqrt(GRAVITY_PRESETS["earth"] / GRAVITY_PRESETS["moon"])
+    measured_period_ratio = t_moon_sim / t_earth_sim
+
+    tol_draft_diff = 1e-9
+    tol_moon_period = 0.05
+    tol_period_ratio = 0.02
+    test4_passed = (
+        draft_diff &lt; tol_draft_diff
+        and abs(t_moon_sim - t_moon_ana) &lt;= tol_moon_period
+        and abs(measured_period_ratio - expected_period_ratio) &lt;= tol_period_ratio
+    )
+    tests.append(
+        {
+            "id": "gravity_earth_to_moon",
+            "name": "Gravity Scaling: Earth (9.80665) to Moon (1.62)",
+            "equation": "d_eq independent of g; T_moon / T_earth = sqrt(g_earth / g_moon)",
+            "expected": (
+                f"draft diff &lt; 1e-9 m; T_moon = {t_moon_ana:.4f} s "
+                f"(ratio {expected_period_ratio:.4f})"
+            ),
+            "measured": (
+                f"draft diff = {draft_diff:.2e} m; T_moon = {t_moon_sim:.4f} s "
+                f"(ratio {measured_period_ratio:.4f})"
+            ),
+            "expected_value": round(t_moon_ana, 6),
+            "measured_value": round(t_moon_sim, 6),
+            "expected_ratio": round(expected_period_ratio, 6),
+            "measured_ratio": round(measured_period_ratio, 6),
+            "draft_diff_m": draft_diff,
+            "unit": "s",
+            "tolerance": tol_moon_period,
+            "passed": test4_passed,
+            "detail": (
+                f"d_eq(Earth) = {d_eq_ana:.6f} m vs d_eq(Moon) = {d_eq_moon:.6f} m. "
+                f"Simulated T_moon = {t_moon_sim:.4f} s ({moon_crossings} upward crossings "
+                f"over 50 s) vs T_earth = {t_earth_sim:.4f} s."
+            ),
+        }
+    )
+
+    # ------------------------------------------------------------------
+    # Proof 5: Sinking threshold (M = M_max + 1000 kg -&gt; sinks to seabed)
+    # ------------------------------------------------------------------
+    # M_max = 1025 * 60 * 12 * 4 = 2,952,000 kg (2952 t).
+    # hull_mass_t = 453.0 t + 125 * 20.0 t = 2953.0 t = 2,953,000 kg = M_max + 1000 kg.
+    sinking_params = ShipParams(
+        hull_mass_t=453.0,
+        containers=125,
+        container_mass_t=20.0,
+        fluid_density=FLUID_PRESETS["seawater"],
+        gravity=GRAVITY_PRESETS["earth"],
+        drag_coeff=DRAG_COEFF_DEFAULT,
+    )
+    m_max_kg = max_displacement_kg(
+        sinking_params.length_m,
+        sinking_params.beam_m,
+        sinking_params.height_m,
+        sinking_params.fluid_density,
+    )
+    m_sink_kg = total_mass_kg(sinking_params)
+    seabed_m = tank_depth_m(sinking_params.height_m)
+
+    sink_state = SimState(draft_m=0.0, velocity_mps=0.0, time_s=0.0)
+    sink_duration_s = 120.0
+    sink_steps = int(round(sink_duration_s / DEFAULT_DT_S))
+    for _ in range(sink_steps):
+        sink_state = rk4_step(sink_state, DEFAULT_DT_S, sinking_params)
+
+    sink_status = classify_status(sink_state.draft_m, sinking_params)
+    test5_passed = (
+        abs((m_sink_kg - m_max_kg) - 1000.0) &lt; 1e-6
+        and sink_state.draft_m &gt; sinking_params.height_m
+        and abs(sink_state.draft_m - seabed_m) &lt;= 1e-6
+        and sink_state.velocity_mps == 0.0
+        and sink_status == "sunk"
+    )
+    tests.append(
+        {
+            "id": "sinking_threshold",
+            "name": "Sinking Threshold (M = M_max + 1000 kg)",
+            "equation": "M &gt; rho * L * B * H =&gt; d -&gt; tank_depth_m (sunk)",
+            "expected": f"status = sunk; d = {seabed_m:.2f} m (&gt; H = {sinking_params.height_m:.2f} m)",
+            "measured": (
+                f"status = {sink_status}; d = {sink_state.draft_m:.2f} m "
+                f"(v = {sink_state.velocity_mps:.2f} m/s)"
+            ),
+            "expected_value": round(seabed_m, 6),
+            "measured_value": round(sink_state.draft_m, 6),
+            "unit": "m",
+            "tolerance": 1e-6,
+            "passed": test5_passed,
+            "detail": (
+                f"M_max = {m_max_kg:,.0f} kg, M = {m_sink_kg:,.0f} kg (+1,000 kg overload). "
+                f"Integrated {sink_duration_s:.0f} s from d = 0.00 m; vessel sank past "
+                f"H = {sinking_params.height_m:.2f} m and came to rest on seabed at "
+                f"{sink_state.draft_m:.2f} m."
+            ),
+        }
+    )
+
+    passed_count = sum(1 for t in tests if t["passed"])
+    total_count = len(tests)
+    return {
+        "all_passed": passed_count == total_count,
+        "passed_count": passed_count,
+        "total_count": total_count,
+        "tests": tests,
+    }
+</code></pre>
+      </section>
+    </main>
+
+    <footer class="doc-footer">
+      <span>Cargo Draft Lab | CDL-SPEC-1.0.0 | cargo-draft-lab-python v1.0.0</span>
+      <span>1-DOF Vertical Heave &amp; Archimedes Buoyancy Technical Report</span>
+    </footer>
+  </div>
+</body>
+</html>

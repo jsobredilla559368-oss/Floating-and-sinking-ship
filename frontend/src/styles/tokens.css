@@ -1,0 +1,140 @@
+/*
+ * Cargo Draft Lab design tokens.
+ * Direction: University physics lab instrument panel (ENERGY 1 / RHYTHM 2 / MOTION 2).
+ * Palette: 2 core colors + 1 accent + neutrals, verified >= 4.5:1 WCAG AA in light & dark modes.
+ */
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --bg-surface: #f3f5f7;
+  --bg-panel: #ffffff;
+  --bg-recessed: #e8eef3;
+  --border: #d0d9e2;
+  --border-strong: #9fb1c3;
+  --ink: #14202b;
+  --muted: #4a5c6d;
+
+  /* Core 1: Water & Buoyancy F_b */
+  --core1: #0a6c86;
+  --core1-hover: #08586e;
+  --core1-soft: #eaf5f8;
+  --on-core1: #ffffff;
+
+  /* Core 2: Steel Hull, Rulers, Chrome */
+  --core2: #1f364d;
+  --core2-hover: #16283a;
+  --core2-soft: #e7eef4;
+  --on-core2: #ffffff;
+
+  /* Accent: Weight W, Plimsoll Load Line, Overload/Sunk */
+  --accent: #b83227;
+  --accent-hover: #96271e;
+  --accent-soft: #fdf0ee;
+  --on-accent: #ffffff;
+
+  --focus-ring: #0a6c86;
+  --drawer-shadow: 0 8px 24px rgba(20, 32, 43, 0.12);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-surface: #0f1720;
+  --bg-panel: #16222e;
+  --bg-recessed: #0c131b;
+  --border: #2a3b4c;
+  --border-strong: #496077;
+  --ink: #eaf0f6;
+  --muted: #9fb1c3;
+
+  /* Core 1: Water & Buoyancy F_b */
+  --core1: #38b2ce;
+  --core1-hover: #53c3dc;
+  --core1-soft: #102a36;
+  --on-core1: #0b141c;
+
+  /* Core 2: Steel Hull, Rulers, Chrome */
+  --core2: #94b4d1;
+  --core2-hover: #abc6de;
+  --core2-soft: #1d2d3d;
+  --on-core2: #0b141c;
+
+  /* Accent: Weight W, Plimsoll Load Line, Overload/Sunk */
+  --accent: #f06458;
+  --accent-hover: #f47e74;
+  --accent-soft: #33191b;
+  --on-accent: #140908;
+
+  --focus-ring: #38b2ce;
+  --drawer-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+}
+
+:root {
+  --font-display: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Base interaction affordances (R-32, R-39) */
+button:not(:disabled),
+a[href],
+select:not(:disabled),
+summary,
+label[for],
+input[type='range']:not(:disabled),
+input[type='checkbox']:not(:disabled),
+input[type='radio']:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
